@@ -6,7 +6,7 @@
 
 Penelitian ini menerapkan pendekatan prediktif hibrida (*hybrid predictive modeling*) yang mengintegrasikan metode statistik klasik *Autoregressive Integrated Moving Average* (ARIMA) dengan metode *machine learning* berbasis *Artificial Neural Network* (ANN), yaitu *Long Short-Term Memory* (LSTM). Tujuan utamanya adalah melakukan proyeksi tren harga saham sektor energi batubara di Bursa Efek Indonesia (BEI/IDX) untuk rentang tahun 2025 hingga 2045 sebagai indikator proksi pertumbuhan ekonomi nasional.
 
-Kerangka kerja penelitian secara menyeluruh disajikan pada diagram alir (*flowchart*) berikut:
+Kerangka kerja penelitian ini dirancang secara sistematis melalui 6 tahapan utama yang ditunjukkan pada alur kerja berikut:
 
 ```mermaid
 flowchart TD
