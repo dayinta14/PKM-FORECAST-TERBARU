@@ -1,0 +1,15 @@
+=======================================================================
+RUN MANIFEST -- GENERATED ARTIFACTS
+=======================================================================
+1. outputs/residual_diagnostics/ljung_box_results.csv
+2. outputs/evaluation/final_test_predictions.csv
+3. outputs/evaluation/final_metrics.csv
+4. outputs/evaluation/random_walk_results.csv
+5. outputs/statistical_tests/diebold_mariano_results.csv
+6. outputs/validation/expanding_window_results.csv
+7. outputs/validation/expanding_window_orders.csv
+8. outputs/validation/expanding_window_summary.csv
+9. outputs/long_term/long_term_scenarios_2025_2045.csv
+10. outputs/reproducibility/environment_info.txt
+11. outputs/reproducibility/run_manifest.txt
+=======================================================================

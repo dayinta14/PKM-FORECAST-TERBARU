@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Bab 2 – Research Method (Revised)</title>
+<link href="https://fonts.googleapis.com/css2?family=Times+New+Roman:ital,wght@0,400;0,700;1,400&family=Linux+Libertine:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet"/>
+<!-- MathJax for equations -->
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [['$','$']], displayMath: [['$$','$$']] },
+    options: { skipHtmlTags: ['script','noscript','style','textarea','pre'] }
+  };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<style>
+  /* ── Print / Screen base ── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: "Times New Roman", Times, serif;
+    font-size: 11pt;
+    line-height: 1.6;
+    color: #000;
+    background: #fff;
+    padding: 0;
+  }
+
+  .page {
+    max-width: 170mm;
+    margin: 0 auto;
+    padding: 20mm 20mm 20mm 25mm;
+  }
+
+  /* ── Headings ── */
+  h1 { font-size: 13pt; font-weight: bold; text-align: center; margin-bottom: 18pt; text-transform: uppercase; letter-spacing: .5px; }
+  h2 { font-size: 11pt; font-weight: bold; margin-top: 14pt; margin-bottom: 6pt; }
+  h3 { font-size: 11pt; font-weight: bold; font-style: italic; margin-top: 10pt; margin-bottom: 4pt; }
+  h4 { font-size: 11pt; font-weight: bold; margin-top: 8pt; margin-bottom: 3pt; }
+
+  /* ── Paragraphs ── */
+  p { text-align: justify; margin-bottom: 6pt; text-indent: 0; }
+  p + p { text-indent: 1.5em; }
+
+  /* ── Lists ── */
+  ul, ol { margin-left: 1.5em; margin-bottom: 6pt; }
+  li { margin-bottom: 3pt; }
+
+  /* ── Tables ── */
+  table { width: 100%; border-collapse: collapse; font-size: 10pt; margin: 10pt 0; }
+  thead th {
+    background: #f0f0f0;
+    border: 1px solid #888;
+    padding: 5pt 7pt;
+    text-align: center;
+    font-weight: bold;
+  }
+  tbody td {
+    border: 1px solid #aaa;
+    padding: 4pt 7pt;
+    vertical-align: top;
+  }
+  tbody tr:nth-child(even) td { background: #fafafa; }
+  caption { font-size: 10pt; font-weight: bold; margin-bottom: 4pt; text-align: left; }
+
+  /* ── Equations block ── */
+  .eq-block {
+    text-align: center;
+    margin: 8pt 0;
+    font-size: 11pt;
+  }
+
+  /* ── Code / inline ── */
+  code {
+    font-family: "Courier New", Courier, monospace;
+    font-size: 9.5pt;
+    background: #f5f5f5;
+    padding: 1px 3px;
+    border-radius: 2px;
+  }
+
+  /* ── Section separator ── */
+  hr { border: none; border-top: 1px solid #ccc; margin: 16pt 0; }
+
+  /* ── Footnote / disclaimer ── */
+  .note {
+    font-size: 9.5pt;
+    border-left: 3px solid #888;
+    padding-left: 8pt;
+    margin: 8pt 0;
+    color: #333;
+    font-style: italic;
+  }
+
+  /* ── Print settings ── */
+  @media print {
+    body { font-size: 10pt; }
+    .page { padding: 15mm 15mm 15mm 20mm; max-width: 100%; }
+    .no-print { display: none !important; }
+    h2, h3, h4 { page-break-after: avoid; }
+    table { page-break-inside: avoid; }
+  }
+
+  /* ── Print button ── */
+  .print-btn {
+    position: fixed;
+    top: 16px;
+    right: 20px;
+    background: #2b6cb0;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    font-size: 13px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: Arial, sans-serif;
+    box-shadow: 0 2px 8px rgba(0,0,0,.2);
+    z-index: 999;
+  }
+  .print-btn:hover { background: #1a4b8c; }
+</style>
+</head>
+<body>
+
+<button class="print-btn no-print" onclick="window.print()">🖨️ Simpan / Cetak PDF</button>
+
+<div class="page">
+
+<h1>2. Research Method</h1>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<h2>2.1 Research Framework</h2>
+
+<p>This study adopts a hybrid predictive modelling approach that integrates classical statistical time-series analysis with a deep-learning architecture. Following Zhang (2003), the framework decomposes the stock price series $Y_t$ into a linear component $L_t$ and a nonlinear residual component $N_t$ through the additive decomposition:</p>
+
+<div class="eq-block">$$Y_t = L_t + N_t \tag{1}$$</div>
+
+<p>An essential design principle of this framework is that <strong>each ticker is modelled independently</strong>. No single pooled model is built across all four equities; instead, separate ARIMA orders are identified, separate LSTM weights are trained, and separate evaluation metrics are computed for ADRO, PTBA, INDY, and ITMG. This stock-specific approach is justified by the substantial heterogeneity in price levels, volatility structure, and autocorrelation patterns across the four companies, as demonstrated in the descriptive statistics and stationarity tests in Section 3.1. Pooling the series into a single model would conflate fundamentally different data-generating processes and invalidate the assumptions of each component model.</p>
+
+<p>The overall research workflow proceeds through the following sequential stages: (i) data acquisition and preprocessing; (ii) stationarity testing; (iii) ARIMA fitting and residual extraction; (iv) LSTM residual learning; (v) hybrid combination; (vi) out-of-sample evaluation against multiple benchmarks including a Naïve Random Walk; and (vii) exploratory long-term scenario generation. All stages are implemented in Python and documented in the accompanying source files (<code>model_arima.ipynb</code>, <code>model_ann_lstm.py</code>, <code>expanding_window_cv.py</code>).</p>
+
+<hr/>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<h2>2.2 Research Data and Dataset Split</h2>
+
+<p>The primary data consist of daily <em>Adjusted Closing Price</em> series for four Indonesian coal-sector equities listed on the Indonesia Stock Exchange (IDX): ADRO, PTBA, INDY, and ITMG. Data were retrieved from Yahoo Finance via the <code>yfinance</code> API on <strong>31 December 2024</strong>, covering the period <strong>1 January 2004 – 31 December 2024</strong>, yielding 5,199 trading-day observations per ticker after holiday imputation. The raw series are stored in <code>harga_saham_batubara.csv</code>.</p>
+
+<h3>Dataset Split</h3>
+<p>A strict chronological split is applied to prevent any future data leakage:</p>
+
+<table>
+  <caption>Table 1. Chronological dataset partition</caption>
+  <thead><tr><th>Partition</th><th>Period</th><th>Observations</th></tr></thead>
+  <tbody>
+    <tr><td>Training Set</td><td>2004-01-01 – 2022-12-31</td><td>4,723</td></tr>
+    <tr><td>Test Set (out-of-sample)</td><td>2023-01-01 – 2024-12-31</td><td>476</td></tr>
+  </tbody>
+</table>
+
+<p>No data shuffling is performed at any stage. The temporal order of observations is preserved throughout all preprocessing, training, and evaluation steps.</p>
+
+<h3>Forecast Horizon and Prediction Mechanism</h3>
+<p>Model evaluation on the test set is conducted using a <strong>one-step-ahead rolling forecast</strong> (recursive rolling-origin scheme). At each time step $t$ in the test period, the ARIMA component generates a one-step-ahead forecast using all data up to $t-1$, and the LSTM component predicts the corresponding residual using a sliding window of the 30 most recent residual observations ending at $t-1$. The actual observed value $y_t$ is then incorporated into the history before the next step, so that each forecast conditions exclusively on information available prior to the prediction point. This design eliminates look-ahead bias and mirrors realistic production forecasting conditions.</p>
+
+<h3>Implementation Environment</h3>
+<p>All experiments are executed using Python 3.11, TensorFlow 2.21.0 / Keras, statsmodels 0.14, scikit-learn 1.4, pandas 2.2, numpy 1.26, and yfinance 0.2. A global random seed of 2024 is set at the start of every script (<code>np.random.seed(2024)</code> and <code>tf.random.set_seed(2024)</code>) to ensure full reproducibility. The hardware environment consists of an Intel Core i7-12700H processor, 16 GB RAM, and an NVIDIA RTX 3060 GPU (CUDA 12). All dependency versions are documented in <code>requirements.txt</code>, and source code, trained model weights, and derived data files are maintained in the project repository.</p>
+
+<hr/>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<h2>2.3 Data Preprocessing</h2>
+
+<h3>2.3.1 Missing Value Handling</h3>
+<p>Trading-day gaps arising from public holidays are imputed using a sequential <em>forward fill</em> followed by <em>backward fill</em>:</p>
+<div class="eq-block">$$Y_t = Y_{t-1} \quad \text{if } Y_t \text{ is missing} \tag{2}$$</div>
+
+<h3>2.3.2 Stationarity Testing</h3>
+<p>Stationarity is assessed using a complementary dual-test strategy: the <strong>Augmented Dickey-Fuller (ADF) Test</strong> and the <strong>Kwiatkowski-Phillips-Schmidt-Shin (KPSS) Test</strong>. The null hypothesis of the ADF test is the presence of a unit root ($H_0$: non-stationary), while the KPSS test has stationarity as its null. Agreement between both tests reduces the risk of a Type I or Type II classification error.</p>
+
+<p>All four series are found to be integrated of order one, I(1): non-stationary at the price level but stationary after first-order differencing ($d = 1$). A special case arises with <strong>ADRO</strong>: although the ADF test rejects the unit-root null at the first-difference level (ADF statistic $= -11.91$, $p < 0.001$), the KPSS statistic on the first-differenced series remains marginally above the 5% critical value (KPSS $= 0.756$), indicating residual non-stationarity of a different form, possibly heteroscedasticity. In practice, $d = 1$ is retained for ADRO because the log-return series is confirmed stationary by both tests; the ARIMA model is estimated on first-differences, consistent with the standard convention for financial price series. This issue is acknowledged as a potential source of estimation uncertainty in the ADRO model.</p>
+
+<p>First-order differencing is defined as:</p>
+<div class="eq-block">$$\Delta Y_t = Y_t - Y_{t-1} \tag{3}$$</div>
+
+<h3>2.3.3 Min-Max Scaling</h3>
+<p>Prior to LSTM training, the residual series is transformed to the interval $[0, 1]$ to facilitate gradient-based optimisation:</p>
+<div class="eq-block">$$X_{\text{scaled}} = \frac{X - X_{\min}}{X_{\max} - X_{\min}} \tag{4}$$</div>
+<p>Scaling parameters are estimated exclusively from the training partition and stored in <code>scalers_resid.pkl</code>; the same parameters are applied to the test partition, precluding information leakage from future observations.</p>
+
+<h3>2.3.4 Sliding-Window Sequence Construction</h3>
+<p>The scaled residual series is transformed into supervised learning pairs $(\mathbf{x}, y)$ using a sliding window of length $k = 30$ trading days:</p>
+<ul>
+  <li><strong>Input:</strong> $\mathbf{x}_t = [\epsilon_{t-k},\, \epsilon_{t-k+1},\, \dots,\, \epsilon_{t-1}]$</li>
+  <li><strong>Target:</strong> $y_t = \epsilon_t$</li>
+</ul>
+<p>This window length is consistent with approximately one calendar month of trading days and is held constant across all folds and all tickers.</p>
+
+<hr/>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<h2>2.4 ARIMA Modelling and Residual Extraction</h2>
+
+<h3>2.4.1 Linear Component: ARIMA$(p,d,q)$</h3>
+<p>The ARIMA$(p,1,q)$ model captures the linear dynamics of the differenced price series:</p>
+<div class="eq-block">$$\Phi_p(B)(1-B)^d Y_t = \Theta_q(B)\epsilon_t \tag{5}$$</div>
+<p>The ARIMA order $(p,1,q)$ is determined independently for each ticker through an exhaustive grid search over $p,q \in \{0,1,2,3,4\}$ (25 combinations per ticker), selecting the specification that minimises the <em>Akaike Information Criterion</em> (AIC). The value $d = 1$ is fixed for all tickers based on the stationarity test results in Section 2.3.2. Models are estimated using <code>statsmodels.tsa.statespace.SARIMAX</code> with the L-BFGS-B solver (maximum 300 iterations). <strong>For the expanding-window cross-validation (Section 2.8), the grid search is repeated independently within each fold's training window</strong>, so that the selected order does not carry information from future sub-periods.</p>
+
+<h3>2.4.2 Residual Extraction</h3>
+<p>After fitting ARIMA on the training data, the in-sample residuals $\hat{\epsilon}_t$ are extracted as the difference between the observed price and the ARIMA fitted value:</p>
+<div class="eq-block">$$\hat{\epsilon}_t = Y_t - \hat{L}_t, \quad t \in \text{Training Set} \tag{6}$$</div>
+<p>These residuals represent the portion of the price series that cannot be explained by the linear ARIMA structure and constitute the target sequence for LSTM training. Leading NaN values arising from the differencing operation are discarded before passing the residual sequence to the LSTM.</p>
+
+<h3>2.4.3 Residual Diagnostic: Ljung–Box Test</h3>
+<p>To confirm that the extracted residuals are suitable targets for nonlinear learning — i.e., that no significant linear autocorrelation remains — the <strong>Ljung–Box portmanteau test</strong> is applied at lags $h \in \{5, 10, 20\}$:</p>
+<div class="eq-block">$$Q_h = n(n+2)\sum_{k=1}^{h}\frac{\hat{\rho}_k^2}{n-k} \tag{7}$$</div>
+<p>where $\hat{\rho}_k$ is the sample autocorrelation at lag $k$ and $n$ is the effective sample size. A $p$-value greater than 0.05 at all tested lags indicates that the residual series is free of significant linear serial dependence, confirming that the ARIMA has adequately captured the linear structure and that any remaining signal in $\hat{\epsilon}_t$ is of a nonlinear character amenable to LSTM modelling.</p>
+
+<hr/>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<h2>2.5 LSTM Residual Modelling</h2>
+
+<h3>2.5.1 Architecture</h3>
+<p>The LSTM network processes the residual sequence $\hat{\epsilon}_t$ through the following architecture, implemented in <code>model_ann_lstm.py</code> and <code>expanding_window_cv.py</code> (function <code>build_lstm</code>, lines 58–69):</p>
+<ol>
+  <li><strong>Input layer</strong>: sequence of shape $(30, 1)$</li>
+  <li><strong>LSTM layer 1</strong>: 64 units, <code>return_sequences=True</code></li>
+  <li><strong>Dropout</strong>: rate $r = 0.20$</li>
+  <li><strong>LSTM layer 2</strong>: 64 units</li>
+  <li><strong>Dropout</strong>: rate $r = 0.20$</li>
+  <li><strong>Dense layer</strong>: 32 units, ReLU activation</li>
+  <li><strong>Output layer</strong>: 1 unit, linear activation</li>
+</ol>
+<p>The gating mechanism of each LSTM cell is governed by:</p>
+<div class="eq-block">$$f_t = \sigma(W_f \cdot [h_{t-1}, x_t] + b_f) \tag{8}$$</div>
+<div class="eq-block">$$i_t = \sigma(W_i \cdot [h_{t-1}, x_t] + b_i) \tag{9}$$</div>
+<div class="eq-block">$$C_t = f_t \odot C_{t-1} + i_t \odot \tanh(W_c \cdot [h_{t-1}, x_t] + b_c) \tag{10}$$</div>
+<div class="eq-block">$$h_t = o_t \odot \tanh(C_t) \tag{11}$$</div>
+
+<h3>2.5.2 Training Protocol and Leakage Prevention</h3>
+<p>Training data are fed to the network in their original chronological order; <strong>no shuffling is applied</strong>. The last 15% of the training sequence is withheld as an in-training validation set (<code>validation_split = 0.15</code>) to monitor generalisation and trigger early stopping. Because this split is taken from the tail of the training window — i.e., the most recent 15% of the pre-2023 data — it remains temporally prior to the test set and introduces no future leakage.</p>
+<p>Two callbacks govern the training process:</p>
+<ul>
+  <li><strong>EarlyStopping</strong>: monitors <code>val_loss</code>, patience = 15 epochs, restores best weights.</li>
+  <li><strong>ReduceLROnPlateau</strong>: halves the learning rate when <code>val_loss</code> stagnates for 5 consecutive epochs.</li>
+</ul>
+<p>The model is compiled with Adam optimizer ($\eta = 0.001$, <code>batch_size = 32</code>) minimising mean squared error (MSE). The global random seed (SEED = 2024) is set before every model instantiation to ensure reproducibility.</p>
+
+<hr/>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<h2>2.6 Hybrid ARIMA-LSTM Combination</h2>
+
+<p>The final hybrid prediction is constructed by linearly combining the ARIMA linear forecast $\hat{L}_t$ with the LSTM residual estimate $\hat{\hat{\epsilon}}_t$:</p>
+<div class="eq-block">$$\hat{Y}_t = \hat{L}_t^{\text{ARIMA}} + \hat{\hat{\epsilon}}_t^{\text{LSTM}} \tag{12}$$</div>
+<p>On the test set, $\hat{L}_t^{\text{ARIMA}}$ is obtained from <code>arima_model.get_forecast(steps=1)</code> at each rolling step, and $\hat{\hat{\epsilon}}_t^{\text{LSTM}}$ is the inverse-scaled output of the trained residual LSTM given the 30 preceding residual observations. Inverse transformation is performed using the scaler fitted on the training residuals (<code>scalers_resid.pkl</code>), ensuring that scale restoration is consistent across all steps and that no test-set statistics influence the transformation.</p>
+
+<hr/>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<h2>2.7 Model Evaluation and Performance Measurement</h2>
+
+<h3>2.7.1 Benchmark Models</h3>
+<p>Four models are compared in the out-of-sample evaluation:</p>
+
+<table>
+  <caption>Table 2. Models compared in out-of-sample evaluation</caption>
+  <thead><tr><th>Model</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Naïve Random Walk (NRW)</strong></td><td>$\hat{Y}_{t+1} = Y_t$</td></tr>
+    <tr><td><strong>ARIMA$(p,1,q)$</strong></td><td>Standalone linear autoregressive model</td></tr>
+    <tr><td><strong>LSTM</strong></td><td>Pure deep-learning model trained on price series</td></tr>
+    <tr><td><strong>Hybrid ARIMA-LSTM</strong></td><td>Proposed additive combination (Equation 12)</td></tr>
+  </tbody>
+</table>
+
+<p>The <strong>Naïve Random Walk</strong> serves as the primary benchmark. Under the weak-form Efficient Market Hypothesis, stock prices approximate a random walk, implying that any forecasting model must outperform this naïve forecast to demonstrate genuine predictive skill. MASE and RMSSE (defined below) are normalised against the random walk's one-step-ahead absolute error, providing a scale-free performance comparison across the four tickers whose price levels differ by an order of magnitude.</p>
+
+<h3>2.7.2 Evaluation Metrics</h3>
+<p>All metrics are computed on the aligned test set of 446 observations per ticker. The first 30 observations of the 476-point test window are consumed as the initial LSTM input sequence (window $k = 30$), consistent with the implementation in <code>hitung_r2_lstm.py</code> (lines 32–34: <code>N_TEST = 476</code>, <code>WINDOW = 30</code>, <code>N_EVAL = 446</code>).</p>
+
+<h4>1. Mean Absolute Error (MAE)</h4>
+<div class="eq-block">$$\text{MAE} = \frac{1}{n}\sum_{i=1}^{n}|y_i - \hat{y}_i| \tag{13}$$</div>
+
+<h4>2. Root Mean Squared Error (RMSE)</h4>
+<div class="eq-block">$$\text{RMSE} = \sqrt{\frac{1}{n}\sum_{i=1}^{n}(y_i - \hat{y}_i)^2} \tag{14}$$</div>
+
+<h4>3. Mean Absolute Percentage Error (MAPE)</h4>
+<div class="eq-block">$$\text{MAPE} = \frac{100\%}{n}\sum_{i=1}^{n}\left|\frac{y_i - \hat{y}_i}{y_i}\right| \tag{15}$$</div>
+
+<h4>4. Coefficient of Determination ($R^2$)</h4>
+<div class="eq-block">$$R^2 = 1 - \frac{\displaystyle\sum_{i=1}^{n}(y_i - \hat{y}_i)^2}{\displaystyle\sum_{i=1}^{n}(y_i - \bar{y})^2} \tag{16}$$</div>
+<p>A negative $R^2$ indicates that the model performs worse than a constant forecast equal to the historical mean $\bar{y}$, which may arise during out-of-sample periods characterised by structural breaks or distributional shift relative to the training period.</p>
+
+<h4>5. Mean Absolute Scaled Error (MASE)</h4>
+<div class="eq-block">$$\text{MASE} = \frac{\text{MAE}}{\dfrac{1}{n-1}\displaystyle\sum_{t=2}^{n}|y_t - y_{t-1}|} \tag{17}$$</div>
+<p>MASE normalises the absolute error against the mean absolute one-step-ahead naïve forecast error. A value less than 1 indicates that the model outperforms the Naïve Random Walk.</p>
+
+<h4>6. Root Mean Squared Scaled Error (RMSSE)</h4>
+<div class="eq-block">$$\text{RMSSE} = \sqrt{\frac{\text{RMSE}^2}{\dfrac{1}{n-1}\displaystyle\sum_{t=2}^{n}(y_t - y_{t-1})^2}} \tag{18}$$</div>
+<p>RMSSE is the quadratic counterpart of MASE, penalising large individual errors more heavily and providing a scale-free comparison across equities with different price levels.</p>
+
+<h4>7. Directional Accuracy (DA)</h4>
+<div class="eq-block">$$\text{DA} = \frac{1}{n-1}\sum_{t=2}^{n}\mathbf{1}\!\left[\text{sign}(y_t - y_{t-1}) = \text{sign}(\hat{y}_t - \hat{y}_{t-1})\right] \times 100\% \tag{19}$$</div>
+<p>DA measures the proportion of time steps for which the model correctly predicts the direction (upward or downward) of price movement. This metric is particularly relevant for practitioners concerned with directional trading signals rather than the magnitude of the forecast error alone.</p>
+
+<hr/>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<h2>2.8 Expanding-Window Cross-Validation</h2>
+
+<p>Prior to the final evaluation on the 2023–2024 test set, model stability is assessed using an <strong>expanding-window cross-validation</strong> scheme implemented in <code>expanding_window_cv.py</code>. Three folds are defined as follows:</p>
+
+<table>
+  <caption>Table 3. Expanding-window cross-validation fold structure</caption>
+  <thead><tr><th>Fold</th><th>Training Data (end date)</th><th>Validation Year</th><th>Validation Obs.</th></tr></thead>
+  <tbody>
+    <tr><td>Fold 1</td><td>Up to 2019-12-31</td><td>2020</td><td>≈ 245</td></tr>
+    <tr><td>Fold 2</td><td>Up to 2020-12-31</td><td>2021</td><td>≈ 245</td></tr>
+    <tr><td>Fold 3</td><td>Up to 2021-12-31</td><td>2022</td><td>≈ 245</td></tr>
+  </tbody>
+</table>
+
+<p>At each fold, the training window expands to include all data up to the fold's cutoff date; no data are discarded. The ARIMA grid search is <strong>re-executed within each fold independently</strong>, and a fresh LSTM model is trained from scratch on each fold's training window. The mean MAPE across three folds provides a temporally robust estimate of predictive performance that is less susceptible to the idiosyncrasies of any single evaluation sub-period.</p>
+
+<hr/>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<h2>2.9 Exploratory Long-Term Scenario Generation (2025–2045)</h2>
+
+<p>The best-performing model per ticker — selected on the basis of the 2023–2024 out-of-sample evaluation — is used to generate exploratory price scenarios for January 2025 through December 2045 using an <strong>iterative recursive multi-step forecast</strong>: the model produces one-step-ahead predictions sequentially, and each predicted value is appended to the input history before the next prediction step.</p>
+
+<div class="note">
+<strong>Important disclaimer:</strong> These long-term projections are <em>conditional scenarios</em>, not validated forecasts. The model assumes structural stability over a 20-year horizon, whereas empirical evidence suggests that financial markets undergo periodic regime changes. Forecast uncertainty accumulates with each recursive step, producing progressively widening confidence bands. No out-of-sample evidence exists to validate 20-year projections against observed outcomes. Accordingly, the projections are presented as exploratory methodological illustrations under a <em>ceteris paribus</em> assumption and must not be interpreted as investment recommendations.
+</div>
+
+<p>Ninety-five percent confidence intervals for the long-term scenarios are derived from the ARIMA component's <code>get_forecast()</code> method, which propagates forecast error variance analytically:</p>
+<div class="eq-block">$$\hat{Y}_t^{\text{lower}} = \hat{L}_t - 1.96\,\hat{\sigma}_e(h), \qquad \hat{Y}_t^{\text{upper}} = \hat{L}_t + 1.96\,\hat{\sigma}_e(h) \tag{20}$$</div>
+<p>where $\hat{\sigma}_e(h)$ denotes the estimated standard error at forecast horizon $h$, which increases with $h$ to reflect the accumulation of prediction uncertainty inherent in multi-step recursive forecasting.</p>
+
+<hr/>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<h2>2.10 Interactive Web Dashboard</h2>
+
+<p>Model outputs — including historical prices, test-set predictions, evaluation metrics, and long-term scenarios — are integrated into an interactive web-based analytical dashboard implemented in HTML5, Vanilla CSS3, JavaScript ES6+, and Chart.js v4.4.2 (<code>index.html</code>). The dashboard provides per-ticker navigation, KPI cards displaying MAE, RMSE, MAPE, R², a train/test/forecast zone chart, and a scenario projection table covering milestone years 2025–2045. The dashboard is deployed publicly via Netlify to facilitate broad dissemination of the research outputs.</p>
+
+<p>The dashboard serves exclusively as a <strong>visualisation and dissemination interface</strong>; it does not perform any model computation and is therefore considered a complementary output distinct from the forecasting methodology itself. A scenario disclaimer is prominently displayed within the dashboard to prevent misinterpretation of the long-term projections as validated predictions.</p>
+
+<hr/>
+
+<p style="font-size:9pt; color:#555; text-align:center; margin-top:20pt;">
+  Bab 2 – Research Method (Revised) &mdash; Dayinta Agustina Zanuel &mdash; FMIPA &mdash; 2025
+</p>
+
+</div><!-- /.page -->
+
+<script>
+  // Wait for MathJax then remove print-blocking flash
+  document.addEventListener("DOMContentLoaded", function() {
+    document.querySelector('.print-btn').style.display = 'block';
+  });
+</script>
+</body>
+</html>

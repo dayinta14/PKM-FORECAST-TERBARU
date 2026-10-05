@@ -1,0 +1,13 @@
+=======================================================================
+Antigravity Research Pipeline Environment Information
+=======================================================================
+Execution Date: 2026-10-05 15:32:28
+OS: Windows-10-10.0.26200-SP0
+Python: 3.11.9 (tags/v3.11.9:de54cf5, Apr  2 2024, 10:12:12) [MSC v.1938 64 bit (AMD64)]
+Numpy: 2.4.6
+Pandas: 3.0.3
+TensorFlow: 2.21.0
+Seed: 2024
+Evaluation Window: Test Set 2023-2024 (1-step-ahead rolling)
+Expanding Window Folds: Fold 1 (2020), Fold 2 (2021), Fold 3 (2022)
+=======================================================================

@@ -4,7 +4,7 @@
 
 ## 2.1 Kerangka Kerja Penelitian
 
-Penelitian ini menerapkan pendekatan prediktif hibrida (*hybrid predictive modeling*) yang mengintegrasikan metode statistik klasik *Autoregressive Integrated Moving Average* (ARIMA) dengan metode *machine learning* berbasis *Artificial Neural Network* (ANN), yaitu *Long Short-Term Memory* (LSTM). Tujuan utamanya adalah melakukan proyeksi tren harga saham sektor energi batubara di Bursa Efek Indonesia (BEI/IDX) untuk rentang tahun 2025 hingga 2045 sebagai indikator proksi pertumbuhan ekonomi nasional.
+Penelitian ini menerapkan pendekatan prediktif hibrida (*hybrid predictive modeling*) yang mengintegrasikan metode statistik klasik *Autoregressive Integrated Moving Average* (ARIMA) dengan metode *machine learning* berbasis *Artificial Neural Network* (ANN), yaitu *Long Short-Term Memory* (LSTM). **The objective of this study is to develop and evaluate** a Hybrid ARIMA-LSTM forecasting framework for Indonesian coal sector stock prices (2004–2024) and to generate long-term price projections for 2025–2045 as a proxy indicator of national economic growth.
 
 Kerangka kerja penelitian ini dirancang secara sistematis melalui 6 tahapan utama yang ditunjukkan pada alur kerja berikut:
 
@@ -124,8 +124,8 @@ Residual linear $\epsilon_t$ yang memuat pola non-linear dimodelkan menggunakan 
 4. **Output Gate ($o_t$) & Hidden State ($h_t$)**: $h_t = o_t * \tanh(C_t)$
 
 Tahapan pemodelan LSTM:
-* **Arsitektur LSTM**: 2 Layer LSTM (50 units), Batch Normalization, Dropout ($r=0.2$), Dense Layer (1 unit).
-* **Training Model**: Optimasi menggunakan Adam Optimizer ($\eta=0.001$), EarlyStopping, dan ReduceLROnPlateau.
+* **Arsitektur LSTM**: 2 Layer LSTM (64 units masing-masing), Dropout ($r=0.2$), Dense Layer (32 units, aktivasi ReLU), Dense Output (1 unit).
+* **Training Model**: Optimasi menggunakan Adam Optimizer ($\eta=0.001$), EarlyStopping (patience=15), dan ReduceLROnPlateau. Reproducibility dijamin dengan *global random seed* = 2024 (`numpy.random.seed(2024)` dan `tensorflow.random.set_seed(2024)`).
 * **Prediksi Residual ($\hat{\epsilon}_t$)**: Mengestimasi komponen non-linear residual.
 
 ### 2.4.3 Penggabungan Model (Hybrid ARIMA-LSTM)
@@ -156,7 +156,18 @@ Model ARIMA murni, LSTM murni, dan Hybrid ARIMA-LSTM dievaluasi menggunakan 4 me
 ## 2.6 Proyeksi Jangka Panjang 2025–2045 & Implementasi Dashboard
 
 ### 2.6.1 Proyeksi Jangka Panjang 2025–2045
-Model Hybrid ARIMA-LSTM terbaik yang telah teruji diproyeksikan secara berulang (*iterative multi-step forecasting*) untuk menghasilkan estimasi tren harga saham sektor batubara hingga *milestone* tahun 2045.
+Model terbaik per emiten yang telah teruji — Hybrid ARIMA-LSTM untuk ADRO, PTBA, dan ITMG, serta LSTM murni untuk INDY — diproyeksikan secara berulang (*iterative multi-step forecasting*) untuk menghasilkan estimasi tren harga saham sektor batubara hingga *milestone* tahun 2045.
 
-### 2.6.2 Implementasi Dashboard Interaktif
+#### Uncertainty Bounds (Interval Kepercayaan 95%)
+Batas bawah dan batas atas proyeksi dihitung menggunakan **95% Confidence Interval** dari model ARIMA jangka panjang yang di-*fit* pada data penuh (2004–2024), menggunakan metode `get_forecast()` dari *statsmodels SARIMAX*:
+
+$$\hat{Y}_t^{\text{lower}} = \hat{Y}_{t,\text{ARIMA}} - z_{0.025} \cdot \hat{\sigma}_e(h)$$
+$$\hat{Y}_t^{\text{upper}} = \hat{Y}_{t,\text{ARIMA}} + z_{0.025} \cdot \hat{\sigma}_e(h)$$
+
+di mana $z_{0.025} = 1{,}96$ dan $\hat{\sigma}_e(h)$ adalah standar error prediksi pada *forecast horizon* $h$ yang meningkat seiring bertambahnya jarak proyeksi, mencerminkan akumulasi ketidakpastian pada *multi-step forecasting*.
+
+### 2.6.2 Lingkungan Implementasi & Reproducibility
+Seluruh eksperimen dijalankan menggunakan **Python 3.11**, dengan *library* utama: TensorFlow 2.21.0 / Keras, scikit-learn, statsmodels, pandas, numpy, dan yfinance. *Random seed* global ditetapkan pada nilai **2024** (`numpy.random.seed(2024)` dan `tensorflow.random.set_seed(2024)`) untuk memastikan reproducibility hasil pelatihan LSTM.
+
+### 2.6.3 Implementasi Dashboard Interaktif
 Sistem proyeksi diintegrasikan ke dalam dashboard aplikasi web berbasis **HTML5, Vanilla CSS3, JavaScript ES6+, dan Chart.js v4.4.2** yang menyediakan visualisasi interaktif, kartu indikator kinerja (KPI), serta tabel proyeksi *milestone* tahunan menuju Indonesia Emas 2045.

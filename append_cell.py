@@ -11,7 +11,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
-from sklearn.metrics import mean_absolute_error, mean_squared_error
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 
 evaluasi_lstm_standalone = []
 prediksi_lstm_standalone = {}
@@ -55,13 +55,15 @@ for ticker in ticker_list:
     mae = mean_absolute_error(aktual, pred)
     rmse = np.sqrt(mean_squared_error(aktual, pred))
     mape = np.mean(np.abs((aktual - pred) / aktual)) * 100
+    r2 = r2_score(aktual, pred)
     
     evaluasi_lstm_standalone.append({
         "Emiten": ticker,
         "Model": "LSTM",
         "MAE": mae,
         "RMSE": rmse,
-        "MAPE (%)": mape
+        "MAPE (%)": mape,
+        "R²": r2
     })
     print(f"Selesai {ticker} | MAE: {mae:.4f}, RMSE: {rmse:.4f}, MAPE: {mape:.2f}%")
 
@@ -106,7 +108,11 @@ plt.show()
 
 # Cek apakah cell sudah ada untuk menghindari duplikasi
 if nb.cells[-1].cell_type == "code" and "EVALUASI LSTM STANDALONE KHUSUS SESUAI PERMINTAAN" in nb.cells[-1].source:
-    print("Cell sudah ada.")
+    print("Cell sudah ada, memperbarui isinya...")
+    nb.cells[-1].source = new_cell_content
+    with open(notebook_path, "w", encoding="utf-8") as f:
+        nbformat.write(nb, f)
+    print("Successfully updated the last cell in model_ann_lstm.ipynb")
 else:
     new_cell = nbformat.v4.new_code_cell(source=new_cell_content)
     nb.cells.append(new_cell)

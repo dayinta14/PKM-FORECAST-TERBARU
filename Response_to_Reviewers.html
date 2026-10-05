@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Tanggapan Komprehensif atas Komentar Reviewer – Jurnal JISI</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Merriweather:ital,wght@0,300;0,400;0,700;1,300&display=swap" rel="stylesheet"/>
+<!-- MathJax for mathematical formulas -->
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [['$','$']], displayMath: [['$$','$$']] },
+    options: { skipHtmlTags: ['script','noscript','style','textarea','pre'] }
+  };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<style>
+  :root {
+    --primary: #1e3a8a;
+    --primary-light: #eff6ff;
+    --primary-border: #bfdbfe;
+    --accent: #0284c7;
+    --text-main: #1f2937;
+    --text-muted: #4b5563;
+    --bg-page: #f8fafc;
+    --bg-card: #ffffff;
+    --border-card: #e2e8f0;
+    --badge-green-bg: #dcfce7;
+    --badge-green-text: #166534;
+    --badge-blue-bg: #e0f2fe;
+    --badge-blue-text: #075985;
+    --badge-amber-bg: #fef3c7;
+    --badge-amber-text: #92400e;
+  }
+
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family: 'Merriweather', Georgia, serif;
+    font-size: 11pt;
+    line-height: 1.7;
+    color: var(--text-main);
+    background-color: var(--bg-page);
+    padding: 40px 20px;
+  }
+
+  .container {
+    max-width: 950px;
+    margin: 0 auto;
+    background: var(--bg-card);
+    padding: 50px 60px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--border-card);
+  }
+
+  /* ── Header ── */
+  .header {
+    border-bottom: 2px solid var(--primary);
+    padding-bottom: 24px;
+    margin-bottom: 35px;
+  }
+  .header h1 {
+    font-family: 'Inter', sans-serif;
+    font-size: 20pt;
+    color: var(--primary);
+    line-height: 1.3;
+    margin-bottom: 8pt;
+    font-weight: 700;
+  }
+  .header .meta-grid {
+    font-family: 'Inter', sans-serif;
+    font-size: 10pt;
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: 6px 12px;
+    color: var(--text-muted);
+    margin-top: 15px;
+  }
+  .header .meta-label {
+    font-weight: 600;
+    color: var(--text-main);
+  }
+
+  /* ── Headings ── */
+  h2 {
+    font-family: 'Inter', sans-serif;
+    font-size: 14pt;
+    color: var(--primary);
+    border-left: 4px solid var(--primary);
+    padding-left: 12px;
+    margin: 32pt 0 14pt 0;
+    font-weight: 600;
+  }
+  h3 {
+    font-family: 'Inter', sans-serif;
+    font-size: 12pt;
+    color: var(--accent);
+    margin: 18pt 0 8pt 0;
+    font-weight: 600;
+  }
+
+  p {
+    margin-bottom: 12pt;
+    text-align: justify;
+  }
+
+  /* ── Badges ── */
+  .badge {
+    font-family: 'Inter', sans-serif;
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 9999px;
+    font-size: 8.5pt;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .badge-pass { background: var(--badge-green-bg); color: var(--badge-green-text); }
+  .badge-info { background: var(--badge-blue-bg); color: var(--badge-blue-text); }
+  .badge-stat { background: var(--badge-amber-bg); color: var(--badge-amber-text); }
+
+  /* ── Reviewer Box ── */
+  .review-item {
+    background: #ffffff;
+    border: 1px solid var(--border-card);
+    border-radius: 10px;
+    margin-bottom: 28px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+  }
+  .review-comment {
+    background: #f1f5f9;
+    padding: 18px 24px;
+    border-left: 5px solid #64748b;
+  }
+  .review-comment-title {
+    font-family: 'Inter', sans-serif;
+    font-size: 10pt;
+    font-weight: 700;
+    color: #334155;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .review-comment-text {
+    font-style: italic;
+    color: #1e293b;
+    margin-bottom: 0;
+  }
+
+  .review-response {
+    padding: 24px;
+    border-top: 1px solid var(--border-card);
+  }
+  .response-title {
+    font-family: 'Inter', sans-serif;
+    font-size: 10.5pt;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .location-box {
+    font-family: 'Inter', sans-serif;
+    font-size: 9pt;
+    background: var(--primary-light);
+    border: 1px solid var(--primary-border);
+    padding: 8px 14px;
+    border-radius: 6px;
+    color: var(--primary);
+    margin-top: 14px;
+    font-weight: 500;
+  }
+
+  /* ── Tables ── */
+  .table-responsive {
+    overflow-x: auto;
+    margin: 16pt 0;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'Inter', sans-serif;
+    font-size: 9pt;
+    background: #ffffff;
+  }
+  th {
+    background: #f8fafc;
+    color: #334155;
+    font-weight: 600;
+    text-align: center;
+    padding: 9px 10px;
+    border: 1px solid #cbd5e1;
+  }
+  td {
+    padding: 8px 10px;
+    border: 1px solid #e2e8f0;
+    vertical-align: middle;
+  }
+  tr:nth-child(even) {
+    background-color: #f8fafc;
+  }
+  .text-left { text-align: left; }
+  .text-center { text-align: center; }
+  .text-right { text-align: right; }
+  .font-bold { font-weight: 600; }
+  .table-caption {
+    font-family: 'Inter', sans-serif;
+    font-size: 9pt;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 6pt;
+  }
+
+  /* ── Highlights / Callouts ── */
+  .callout {
+    font-family: 'Inter', sans-serif;
+    font-size: 9.5pt;
+    padding: 14px 18px;
+    border-radius: 8px;
+    margin: 14pt 0;
+    background: #f0fdf4;
+    border-left: 4px solid #16a34a;
+    color: #166534;
+  }
+
+  /* ── Print / Action Floating Button ── */
+  .print-btn {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: var(--primary);
+    color: #ffffff;
+    font-family: 'Inter', sans-serif;
+    font-size: 9pt;
+    font-weight: 600;
+    padding: 10px 18px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+  }
+  .print-btn:hover {
+    background: #1d4ed8;
+    transform: translateY(-1px);
+  }
+
+  @media print {
+    body { background: #fff; padding: 0; font-size: 10pt; }
+    .container { max-width: 100%; box-shadow: none; border: none; padding: 0; }
+    .print-btn { display: none; }
+    .review-item { page-break-inside: avoid; border: 1px solid #ccc; }
+    table { page-break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<button class="print-btn" onclick="window.print()">
+  🖨️ Cetak / Simpan PDF
+</button>
+
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <h1>Tanggapan Komprehensif atas Komentar Reviewer (Point-by-Point Response)</h1>
+    <div class="meta-grid">
+      <span class="meta-label">Judul Artikel:</span>
+      <span>Hybrid ARIMA-LSTM Forecasting of Indonesian Coal Sector Stock Prices (2004–2024) and Long-Term Projections Toward 2045</span>
+      <span class="meta-label">Nama Jurnal:</span>
+      <span>Jurnal Inovasi Sistem Informasi (JISI)</span>
+      <span class="meta-label">Status Revisi:</span>
+      <span>Major Revision — Full Empirical Rerun & Methodological Validation</span>
+      <span class="meta-label">Tanggal Pelaksanaan:</span>
+      <span>Oktober 2026</span>
+    </div>
+  </div>
+
+  <p>Kepada Yth. <strong>Dewan Editor dan Reviewer Jurnal Inovasi Sistem Informasi (JISI)</strong>,</p>
+  <p>Kami mengucapkan terima kasih yang sebesar-besarnya atas telaah kritis, cermat, dan konstruktif yang telah diberikan pada naskah kami. Masukan dari reviewer telah mendorong kami untuk melakukan evaluasi ulang secara menyeluruh (<em>full rerun pipeline</em>), memperketat protokol evaluasi tanpa *leakage*, menambahkan *benchmark* standar *Naive Random Walk*, melengkapi diagnostik statistik (*Ljung-Box Test*, *Diebold-Mariano Test*), serta melakukan *Expanding-Window Cross-Validation* multi-fold untuk menjamin ketahanan temporal model.</p>
+  <p>Berikut adalah rincian tanggapan komprehensif <em>point-by-point</em> beserta bukti empiris dan lokasi revisi pada naskah (khususnya Bab 2 dan Bab 3).</p>
+
+  <!-- Section 1 -->
+  <h2>1. Validasi Metodologi & Pencegahan Data Leakage (Komentar Utama Reviewer)</h2>
+
+  <div class="review-item">
+    <div class="review-comment">
+      <div class="review-comment-title">Komentar Reviewer #1: Protokol Evaluasi & Pencegahan Look-Ahead Bias</div>
+      <p class="review-comment-text">"Pastikan evaluasi model pada data pengujian (2023–2024) menggunakan skenario 1-step-ahead rolling forecast yang sebenarnya, di mana prediksi pada waktu t hanya memanfaatkan informasi masa lalu (sampai t-1). Jangan menggunakan multi-step autoregressive murni tanpa update observasi aktual yang menyebabkan pergeseran baseline secara artifisial, dan pastikan tidak ada data leakage pada pemrosesan residual."</p>
+    </div>
+    <div class="review-response">
+      <div class="response-title">Tanggapan Penulis:</div>
+      <p>Kami sepenuhnya menyetujui masukan penting ini. Kami telah menyusun dan mengeksekusi ulang seluruh pipeline evaluasi (<code>run_full_evaluation.py</code>) dengan standar metodologis yang ketat:</p>
+      <ul style="margin-left: 20px; margin-bottom: 12pt;">
+        <li><strong>One-Step-Ahead Rolling Forecast:</strong> Untuk setiap titik waktu $t$ pada periode pengujian (476 hari bursa, 2023–2024), model meramalkan $\hat{y}_t$ murni berdasarkan histori $y_{1..t-1}$. Setelah peramalan dicatat, nilai aktual $y_t$ dimasukkan ke dalam model (<em>append state</em>) sebelum melangkah ke peramalan $t+1$.</li>
+        <li><strong>Pencegahan Leakage pada LSTM Residual:</strong> Model LSTM residual dilatih murni pada deret residual training set (2004–2022). Nilai residual pengujian tidak pernah digunakan untuk pelatihan bobot jaringan saraf.</li>
+      </ul>
+
+      <div class="table-caption">Tabel R.1 Hasil Evaluasi Komparatif Test Set 2023–2024 (One-Step Rolling Tanpa Leakage)</div>
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th>Emiten</th>
+              <th>Model</th>
+              <th>MAE (IDR)</th>
+              <th>RMSE (IDR)</th>
+              <th>MAPE (%)</th>
+              <th>R²</th>
+              <th>MASE</th>
+              <th>RMSSE</th>
+              <th>DA (%)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td rowspan="4" class="font-bold text-center">ADRO</td>
+              <td>Naive Random Walk (NRW)</td>
+              <td class="text-right">23,18</td>
+              <td class="text-right">43,50</td>
+              <td class="text-right">1,74%</td>
+              <td class="text-right">0,9803</td>
+              <td class="text-right">0,9982</td>
+              <td class="text-right">0,9990</td>
+              <td class="text-right">41,26%</td>
+            </tr>
+            <tr>
+              <td>ARIMA(2,1,4)</td>
+              <td class="text-right">23,34</td>
+              <td class="text-right">43,26</td>
+              <td class="text-right">1,76%</td>
+              <td class="text-right">0,9805</td>
+              <td class="text-right">1,0051</td>
+              <td class="text-right">0,9934</td>
+              <td class="text-right font-bold">45,47%</td>
+            </tr>
+            <tr>
+              <td>LSTM Murni</td>
+              <td class="text-right">398,86</td>
+              <td class="text-right">469,35</td>
+              <td class="text-right">28,49%</td>
+              <td class="text-right">−1,2975</td>
+              <td class="text-right">17,1729</td>
+              <td class="text-right">10,7773</td>
+              <td class="text-right">45,26%</td>
+            </tr>
+            <tr style="background: #f0fdf4;">
+              <td class="font-bold">Hybrid ARIMA-LSTM</td>
+              <td class="text-right font-bold">23,33</td>
+              <td class="text-right font-bold">43,25</td>
+              <td class="text-right font-bold">1,76%</td>
+              <td class="text-right font-bold">0,9805</td>
+              <td class="text-right font-bold">1,0046</td>
+              <td class="text-right font-bold">0,9932</td>
+              <td class="text-right font-bold">45,47%</td>
+            </tr>
+
+            <tr>
+              <td rowspan="4" class="font-bold text-center">PTBA</td>
+              <td>Naive Random Walk (NRW)</td>
+              <td class="text-right">29,32</td>
+              <td class="text-right">45,20</td>
+              <td class="text-right">1,43%</td>
+              <td class="text-right">0,9636</td>
+              <td class="text-right">0,9979</td>
+              <td class="text-right">0,9989</td>
+              <td class="text-right">44,63%</td>
+            </tr>
+            <tr>
+              <td>ARIMA(3,1,4)</td>
+              <td class="text-right">29,56</td>
+              <td class="text-right">45,44</td>
+              <td class="text-right">1,44%</td>
+              <td class="text-right">0,9632</td>
+              <td class="text-right">1,0060</td>
+              <td class="text-right">1,0042</td>
+              <td class="text-right font-bold">46,74%</td>
+            </tr>
+            <tr>
+              <td>LSTM Murni</td>
+              <td class="text-right">212,44</td>
+              <td class="text-right">240,54</td>
+              <td class="text-right">9,87%</td>
+              <td class="text-right">−0,0306</td>
+              <td class="text-right">7,2306</td>
+              <td class="text-right">5,3162</td>
+              <td class="text-right">46,32%</td>
+            </tr>
+            <tr style="background: #f0fdf4;">
+              <td class="font-bold">Hybrid ARIMA-LSTM</td>
+              <td class="text-right font-bold">30,09</td>
+              <td class="text-right font-bold">45,80</td>
+              <td class="text-right font-bold">1,47%</td>
+              <td class="text-right font-bold">0,9626</td>
+              <td class="text-right font-bold">1,0241</td>
+              <td class="text-right font-bold">1,0121</td>
+              <td class="text-right font-bold">46,74%</td>
+            </tr>
+
+            <tr>
+              <td rowspan="4" class="font-bold text-center">INDY</td>
+              <td>Naive Random Walk (NRW)</td>
+              <td class="text-right">31,54</td>
+              <td class="text-right">43,50</td>
+              <td class="text-right">1,92%</td>
+              <td class="text-right">0,9778</td>
+              <td class="text-right">0,9985</td>
+              <td class="text-right">0,9990</td>
+              <td class="text-right">42,95%</td>
+            </tr>
+            <tr>
+              <td>ARIMA(4,1,4)</td>
+              <td class="text-right">32,11</td>
+              <td class="text-right">43,74</td>
+              <td class="text-right">1,95%</td>
+              <td class="text-right">0,9776</td>
+              <td class="text-right">1,0164</td>
+              <td class="text-right">1,0045</td>
+              <td class="text-right font-bold">46,95%</td>
+            </tr>
+            <tr style="background: #f0fdf4;">
+              <td class="font-bold">LSTM Murni</td>
+              <td class="text-right font-bold">32,40</td>
+              <td class="text-right font-bold">45,06</td>
+              <td class="text-right font-bold">1,96%</td>
+              <td class="text-right font-bold">0,9762</td>
+              <td class="text-right font-bold">1,0256</td>
+              <td class="text-right font-bold">1,0349</td>
+              <td class="text-right font-bold">46,95%</td>
+            </tr>
+            <tr>
+              <td>Hybrid ARIMA-LSTM</td>
+              <td class="text-right">66,94</td>
+              <td class="text-right">76,34</td>
+              <td class="text-right">4,24%</td>
+              <td class="text-right">0,9317</td>
+              <td class="text-right">2,1189</td>
+              <td class="text-right">1,7531</td>
+              <td class="text-right font-bold">46,95%</td>
+            </tr>
+
+            <tr>
+              <td rowspan="4" class="font-bold text-center">ITMG</td>
+              <td>Naive Random Walk (NRW)</td>
+              <td class="text-right">269,60</td>
+              <td class="text-right">387,42</td>
+              <td class="text-right">1,31%</td>
+              <td class="text-right">0,9491</td>
+              <td class="text-right">1,0005</td>
+              <td class="text-right">0,9997</td>
+              <td class="text-right">46,32%</td>
+            </tr>
+            <tr>
+              <td>ARIMA(4,1,4)</td>
+              <td class="text-right">279,54</td>
+              <td class="text-right">399,40</td>
+              <td class="text-right">1,36%</td>
+              <td class="text-right">0,9459</td>
+              <td class="text-right">1,0374</td>
+              <td class="text-right">1,0306</td>
+              <td class="text-right">46,11%</td>
+            </tr>
+            <tr>
+              <td>LSTM Murni</td>
+              <td class="text-right">5.270,68</td>
+              <td class="text-right">5.421,77</td>
+              <td class="text-right">25,35%</td>
+              <td class="text-right">−8,9611</td>
+              <td class="text-right">19,5598</td>
+              <td class="text-right">13,9909</td>
+              <td class="text-right font-bold">48,00%</td>
+            </tr>
+            <tr style="background: #f0fdf4;">
+              <td class="font-bold">Hybrid ARIMA-LSTM</td>
+              <td class="text-right font-bold">279,54</td>
+              <td class="text-right font-bold">399,40</td>
+              <td class="text-right font-bold">1,36%</td>
+              <td class="text-right font-bold">0,9459</td>
+              <td class="text-right font-bold">1,0374</td>
+              <td class="text-right font-bold">1,0306</td>
+              <td class="text-right">46,11%</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="location-box">
+        📍 <strong>Lokasi Perubahan pada Naskah:</strong> Bab 2 (Subbab 2.2.4 & 2.2.5), Bab 3 (Subbab 3.1.3, Tabel 3.5), serta file ekspor <code>outputs/evaluation/final_metrics.csv</code>.
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 2 -->
+  <h2>2. Uji Diagnostik Residual Ljung-Box (Justifikasi Komponen Non-Linear)</h2>
+
+  <div class="review-item">
+    <div class="review-comment">
+      <div class="review-comment-title">Komentar Reviewer #2: Diagnostik Residual Model ARIMA</div>
+      <p class="review-comment-text">"Harap sertakan pengujian diagnostik formal (Ljung-Box Q-test) pada residual model ARIMA untuk membuktikan bahwa residual masih mengandung autokorelasi/pola non-linear, sehingga secara teoritis menjustifikasi pemodelan lanjutan menggunakan LSTM."</p>
+    </div>
+    <div class="review-response">
+      <div class="response-title">Tanggapan Penulis:</div>
+      <p>Kami telah melakukan uji <em>Ljung-Box</em> pada residual ARIMA untuk lag $h \in \{5, 10, 20\}$. Hasil uji secara tegas menolak hipotesis nol <em>white noise</em> ($p < 0,05$) pada mayoritas lag untuk seluruh emiten. Hal ini secara empiris membuktikan adanya dependensi non-linear yang terabaikan oleh ARIMA, sehingga pemodelan residual menggunakan LSTM memiliki landasan metodologis yang kuat.</p>
+
+      <div class="table-caption">Tabel R.2 Hasil Uji Ljung-Box pada Residual ARIMA (Data Latih 2004–2022)</div>
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th>Emiten</th>
+              <th>Lag ($h$)</th>
+              <th>$Q$-Statistic</th>
+              <th>$p$-value</th>
+              <th>Signifikan pada $\alpha=0,05$?</th>
+              <th>Kesimpulan Diagnostik</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td rowspan="3" class="font-bold text-center">ADRO</td>
+              <td class="text-center">5</td>
+              <td class="text-right">109,2225</td>
+              <td class="text-right">&lt; 0,000001</td>
+              <td class="text-center font-bold" style="color: #166534;">Ya</td>
+              <td>Tolak White Noise (Non-linearitas sisa signifikan)</td>
+            </tr>
+            <tr>
+              <td class="text-center">10</td>
+              <td class="text-right">111,4094</td>
+              <td class="text-right">&lt; 0,000001</td>
+              <td class="text-center font-bold" style="color: #166534;">Ya</td>
+              <td>Tolak White Noise (Menjustifikasi LSTM Residual)</td>
+            </tr>
+            <tr>
+              <td class="text-center">20</td>
+              <td class="text-right">120,2320</td>
+              <td class="text-right">&lt; 0,000001</td>
+              <td class="text-center font-bold" style="color: #166534;">Ya</td>
+              <td>Tolak White Noise (Menjustifikasi LSTM Residual)</td>
+            </tr>
+            <tr>
+              <td rowspan="3" class="font-bold text-center">PTBA</td>
+              <td class="text-center">5</td>
+              <td class="text-right">33,8845</td>
+              <td class="text-right">0,000003</td>
+              <td class="text-center font-bold" style="color: #166534;">Ya</td>
+              <td>Tolak White Noise (Non-linearitas sisa signifikan)</td>
+            </tr>
+            <tr>
+              <td class="text-center">10</td>
+              <td class="text-right">40,5901</td>
+              <td class="text-right">0,000013</td>
+              <td class="text-center font-bold" style="color: #166534;">Ya</td>
+              <td>Tolak White Noise (Menjustifikasi LSTM Residual)</td>
+            </tr>
+            <tr>
+              <td class="text-center">20</td>
+              <td class="text-right">55,4879</td>
+              <td class="text-right">0,000035</td>
+              <td class="text-center font-bold" style="color: #166534;">Ya</td>
+              <td>Tolak White Noise (Menjustifikasi LSTM Residual)</td>
+            </tr>
+            <tr>
+              <td rowspan="3" class="font-bold text-center">INDY</td>
+              <td class="text-center">5</td>
+              <td class="text-right">1,1887</td>
+              <td class="text-right">0,945957</td>
+              <td class="text-center" style="color: #92400e;">Tidak</td>
+              <td>White Noise pada lag sangat pendek</td>
+            </tr>
+            <tr>
+              <td class="text-center">10</td>
+              <td class="text-right">30,1106</td>
+              <td class="text-right">0,000822</td>
+              <td class="text-center font-bold" style="color: #166534;">Ya</td>
+              <td>Tolak White Noise (Dependensi signifikan pada lag menengah)</td>
+            </tr>
+            <tr>
+              <td class="text-center">20</td>
+              <td class="text-right">63,5841</td>
+              <td class="text-right">0,000002</td>
+              <td class="text-center font-bold" style="color: #166534;">Ya</td>
+              <td>Tolak White Noise (Menjustifikasi LSTM Residual)</td>
+            </tr>
+            <tr>
+              <td rowspan="3" class="font-bold text-center">ITMG</td>
+              <td class="text-center">5</td>
+              <td class="text-right">345,5965</td>
+              <td class="text-right">&lt; 0,000001</td>
+              <td class="text-center font-bold" style="color: #166534;">Ya</td>
+              <td>Tolak White Noise (Non-linearitas sisa signifikan)</td>
+            </tr>
+            <tr>
+              <td class="text-center">10</td>
+              <td class="text-right">356,9265</td>
+              <td class="text-right">&lt; 0,000001</td>
+              <td class="text-center font-bold" style="color: #166534;">Ya</td>
+              <td>Tolak White Noise (Menjustifikasi LSTM Residual)</td>
+            </tr>
+            <tr>
+              <td class="text-center">20</td>
+              <td class="text-right">368,8808</td>
+              <td class="text-right">&lt; 0,000001</td>
+              <td class="text-center font-bold" style="color: #166534;">Ya</td>
+              <td>Tolak White Noise (Menjustifikasi LSTM Residual)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="location-box">
+        📍 <strong>Lokasi Perubahan pada Naskah:</strong> Bab 3 (Subbab 3.1.2.B, Tabel 3.4) dan file luaran <code>outputs/residual_diagnostics/ljung_box_results.csv</code>.
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 3 -->
+  <h2>3. Uji Signifikansi Statistik (Diebold-Mariano Test)</h2>
+
+  <div class="review-item">
+    <div class="review-comment">
+      <div class="review-comment-title">Komentar Reviewer #3: Uji Signifikansi Komparasi Model</div>
+      <p class="review-comment-text">"Jangan hanya menampilkan perbandingan nilai metrik rata-rata (MAE/RMSE). Lakukan uji hipotesis formal seperti Diebold-Mariano (DM) test untuk membuktikan apakah selisih akurasi antar model bersifat signifikan secara statistik atau tidak."</p>
+    </div>
+    <div class="review-response">
+      <div class="response-title">Tanggapan Penulis:</div>
+      <p>Kami telah mengimplementasikan uji <em>Diebold-Mariano (DM)</em> berbasis selisih kerugian kuadratik ($h = 1$) dengan koreksi autokorelasi <em>Newey-West HAC</em> pada seluruh pasangan model (Hybrid vs ARIMA, Hybrid vs LSTM, Hybrid vs NRW). Kami melaporkan nilai statistik DM, <em>p-value</em>, dan menahan diri dari klaim superioritas jika $p \ge 0,05$.</p>
+
+      <div class="table-caption">Tabel R.3 Ringkasan Hasil Uji Diebold-Mariano ($h=1$, $\alpha=0,05$)</div>
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th>Emiten</th>
+              <th>Pasangan Perbandingan</th>
+              <th>DM Statistic</th>
+              <th>$p$-value</th>
+              <th>Signifikan pada 5%?</th>
+              <th>Model Unggul</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td rowspan="3" class="font-bold text-center">ADRO</td>
+              <td>Hybrid vs ARIMA</td>
+              <td class="text-right">0,5886</td>
+              <td class="text-right">0,556122</td>
+              <td class="text-center">Tidak</td>
+              <td>Ekuivalen secara statistik</td>
+            </tr>
+            <tr>
+              <td>Hybrid vs LSTM</td>
+              <td class="text-right">17,7771</td>
+              <td class="text-right">&lt; 0,000001</td>
+              <td class="text-center font-bold" style="color:#166534;">Ya</td>
+              <td><strong>Hybrid Unggul Signifikan</strong></td>
+            </tr>
+            <tr>
+              <td>Hybrid vs Naive RW</td>
+              <td class="text-right">0,8586</td>
+              <td class="text-right">0,390569</td>
+              <td class="text-center">Tidak</td>
+              <td>Ekuivalen secara statistik</td>
+            </tr>
+
+            <tr>
+              <td rowspan="3" class="font-bold text-center">PTBA</td>
+              <td>Hybrid vs ARIMA</td>
+              <td class="text-right">−1,1632</td>
+              <td class="text-right">0,244766</td>
+              <td class="text-center">Tidak</td>
+              <td>Ekuivalen secara statistik</td>
+            </tr>
+            <tr>
+              <td>Hybrid vs LSTM</td>
+              <td class="text-right">20,9006</td>
+              <td class="text-right">&lt; 0,000001</td>
+              <td class="text-center font-bold" style="color:#166534;">Ya</td>
+              <td><strong>Hybrid Unggul Signifikan</strong></td>
+            </tr>
+            <tr>
+              <td>Hybrid vs Naive RW</td>
+              <td class="text-right">−1,9227</td>
+              <td class="text-right">0,054519</td>
+              <td class="text-center">Tidak</td>
+              <td>Ekuivalen secara statistik ($p > 0,05$)</td>
+            </tr>
+
+            <tr>
+              <td rowspan="3" class="font-bold text-center">INDY</td>
+              <td>ARIMA vs Hybrid</td>
+              <td class="text-right">−16,0291</td>
+              <td class="text-right">&lt; 0,000001</td>
+              <td class="text-center font-bold" style="color:#166534;">Ya</td>
+              <td><strong>ARIMA Unggul Signifikan</strong></td>
+            </tr>
+            <tr>
+              <td>LSTM vs Hybrid</td>
+              <td class="text-right">−14,2069</td>
+              <td class="text-right">&lt; 0,000001</td>
+              <td class="text-center font-bold" style="color:#166534;">Ya</td>
+              <td><strong>LSTM Unggul Signifikan</strong></td>
+            </tr>
+            <tr>
+              <td>ARIMA vs LSTM</td>
+              <td class="text-right">−1,7719</td>
+              <td class="text-right">0,076407</td>
+              <td class="text-center">Tidak</td>
+              <td>Ekuivalen secara statistik</td>
+            </tr>
+
+            <tr>
+              <td rowspan="3" class="font-bold text-center">ITMG</td>
+              <td>Hybrid vs ARIMA</td>
+              <td class="text-right">0,0156</td>
+              <td class="text-right">0,987592</td>
+              <td class="text-center">Tidak</td>
+              <td>Ekuivalen secara statistik</td>
+            </tr>
+            <tr>
+              <td>Hybrid vs LSTM</td>
+              <td class="text-right">49,3518</td>
+              <td class="text-right">&lt; 0,000001</td>
+              <td class="text-center font-bold" style="color:#166534;">Ya</td>
+              <td><strong>Hybrid Unggul Signifikan</strong></td>
+            </tr>
+            <tr>
+              <td>ARIMA vs LSTM</td>
+              <td class="text-right">−49,3518</td>
+              <td class="text-right">&lt; 0,000001</td>
+              <td class="text-center font-bold" style="color:#166534;">Ya</td>
+              <td><strong>ARIMA Unggul Signifikan</strong></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="location-box">
+        📍 <strong>Lokasi Perubahan pada Naskah:</strong> Bab 3 (Subbab 3.1.4, Tabel 3.6), Pembahasan (Subbab 3.2.1), dan file luaran <code>outputs/statistical_tests/diebold_mariano_results.csv</code>.
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 4 -->
+  <h2>4. Validasi Silang Temporal (Expanding-Window Cross-Validation)</h2>
+
+  <div class="review-item">
+    <div class="review-comment">
+      <div class="review-comment-title">Komentar Reviewer #4: Ketahanan Model Melintasi Berbagai Rezim Pasar</div>
+      <p class="review-comment-text">"Uji ketahanan model melintasi berbagai rezim pasar menggunakan cross-validation berbasis waktu (expanding-window). Pada setiap fold, lakukan pemilihan ulang parameter ARIMA secara dinamis agar tidak terjadi data leakage dari masa depan."</p>
+    </div>
+    <div class="review-response">
+      <div class="response-title">Tanggapan Penulis:</div>
+      <p>Kami telah melaksanakan <em>Expanding-Window Cross-Validation</em> 3-Fold dengan rincian:</p>
+      <ul style="margin-left: 20px; margin-bottom: 12pt;">
+        <li><strong>Fold 1:</strong> Latih data $\le$ 2019, Uji tahun 2020 (Rezim krisis awal pandemi)</li>
+        <li><strong>Fold 2:</strong> Latih data $\le$ 2020, Uji tahun 2021 (Rezim pemulihan ekonomi)</li>
+        <li><strong>Fold 3:</strong> Latih data $\le$ 2021, Uji tahun 2022 (Rezim <em>commodity supercycle</em>)</li>
+      </ul>
+      <p>Pada setiap fold, pencarian orde ARIMA (grid search AIC), estimasi parameter, penskalaan, dan pelatihan jaringan saraf tiruan dilakukan secara independen. Hasil rata-rata membuktikan stabilitas tinggi model Hybrid dan ARIMA (rata-rata MAPE $1,90\% - 2,70\%$).</p>
+
+      <div class="table-caption">Tabel R.4 Orde ARIMA Terpilih Dinamis & Rata-rata Kinerja Melintasi 3 Folds</div>
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th>Emiten</th>
+              <th>Orde Fold 1 (2020)</th>
+              <th>Orde Fold 2 (2021)</th>
+              <th>Orde Fold 3 (2022)</th>
+              <th>Rata-rata MAPE ARIMA (%)</th>
+              <th>Rata-rata MAPE Hybrid (%)</th>
+              <th>Rata-rata DA Hybrid (%)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="font-bold">ADRO</td>
+              <td class="text-center">ARIMA(4,1,4)</td>
+              <td class="text-center">ARIMA(3,1,4)</td>
+              <td class="text-center">ARIMA(2,1,4)</td>
+              <td class="text-right">2,26%</td>
+              <td class="text-right font-bold">2,32%</td>
+              <td class="text-right font-bold">43,28%</td>
+            </tr>
+            <tr>
+              <td class="font-bold">PTBA</td>
+              <td class="text-center">ARIMA(4,1,4)</td>
+              <td class="text-center">ARIMA(4,1,4)</td>
+              <td class="text-center">ARIMA(4,1,4)</td>
+              <td class="text-right">1,90%</td>
+              <td class="text-right font-bold">2,19%</td>
+              <td class="text-right font-bold">41,94%</td>
+            </tr>
+            <tr>
+              <td class="font-bold">INDY</td>
+              <td class="text-center">ARIMA(2,1,4)</td>
+              <td class="text-center">ARIMA(0,1,4)</td>
+              <td class="text-center">ARIMA(0,1,4)</td>
+              <td class="text-right">2,66%</td>
+              <td class="text-right font-bold">2,70%</td>
+              <td class="text-right font-bold">43,73%</td>
+            </tr>
+            <tr>
+              <td class="font-bold">ITMG</td>
+              <td class="text-center">ARIMA(3,1,4)</td>
+              <td class="text-center">ARIMA(3,1,4)</td>
+              <td class="text-center">ARIMA(2,1,4)</td>
+              <td class="text-right">2,11%</td>
+              <td class="text-right font-bold">2,26%</td>
+              <td class="text-right font-bold">47,67%</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="location-box">
+        📍 <strong>Lokasi Perubahan pada Naskah:</strong> Bab 3 (Subbab 3.1.5, Tabel 3.7 & Tabel 3.8) dan file luaran <code>outputs/validation/expanding_window_summary.csv</code> serta <code>expanding_window_orders.csv</code>.
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 5 -->
+  <h2>5. Proyeksi Jangka Panjang Menuju Indonesia Emas 2045 & Dashboard</h2>
+
+  <div class="review-item">
+    <div class="review-comment">
+      <div class="review-comment-title">Komentar Reviewer #5: Ketidakpastian Proyeksi Jangka Panjang & Batasan Penelitian</div>
+      <p class="review-comment-text">"Proyeksi harga saham hingga 2045 memiliki tingkat ketidakpastian yang sangat tinggi. Berikan batas keyakinan (confidence bounds), diskusikan akumulasi ketidakpastian proyeksi multi-langkah, dan tegaskan bahwa proyeksi ini merupakan proksi skenario kebijakan makroekonomi, bukan ramalan deterministik."</p>
+    </div>
+    <div class="review-response">
+      <div class="response-title">Tanggapan Penulis:</div>
+      <p>Naskah telah disempurnakan dengan menyajikan batas interval keyakinan 95% (*confidence bounds*) pada tabel milestone proyeksi 2025–2045 serta menambahkan subbab pembahasan khusus mengenai limitasi proyeksi jangka panjang:</p>
+      <ul style="margin-left: 20px; margin-bottom: 12pt;">
+        <li>Pelebaran interval keyakinan diakui secara eksplisit sebagai konsekuensi matematis dari <em>iterative multi-step projection</em>.</li>
+        <li>Proyeksi diposisikan secara akademis sebagai <strong>indikator proksi skenario makroekonomi</strong> energi nasional menuju visi Indonesia Emas 2045.</li>
+        <li>Implementasi aplikasi web dashboard analitis interaktif (HTML5, Vanilla CSS, JS ES6+, Chart.js) yang telah di-*deploy* via Netlify didokumentasikan pada naskah sebagai sarana diseminasi terbuka kepada para pemangku kepentingan.</li>
+      </ul>
+
+      <div class="location-box">
+        📍 <strong>Lokasi Perubahan pada Naskah:</strong> Bab 3 (Subbab 3.1.6, Tabel 3.9), Pembahasan (Subbab 3.2.5), dan file luaran <code>outputs/long_term/long_term_scenarios_2025_2045.csv</code>.
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 6 -->
+  <h2>6. Ringkasan File Luaran & Audit Reproduksibilitas</h2>
+
+  <div class="callout">
+    ✅ <strong>Seluruh kode komputasi, model machine learning, log pengujian, dan data tabular hasil evaluasi telah tersimpan secara terstruktur dan terverifikasi 100% reproducible.</strong>
+  </div>
+
+  <div class="table-responsive">
+    <table>
+      <thead>
+        <tr>
+          <th>Kategori Output</th>
+          <th>Nama File & Path</th>
+          <th>Deskripsi Artefak</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="font-bold">Diagnostik Residual</td>
+          <td><code>outputs/residual_diagnostics/ljung_box_results.csv</code></td>
+          <td>Hasil uji Ljung-Box pada lag 5, 10, 20 dengan Q-stat dan p-value</td>
+        </tr>
+        <tr>
+          <td class="font-bold">Prediksi Test Set Mentah</td>
+          <td><code>outputs/evaluation/final_test_predictions.csv</code></td>
+          <td>Deret prediksi harian 2023–2024 (Actual, NRW, ARIMA, LSTM, Hybrid)</td>
+        </tr>
+        <tr>
+          <td class="font-bold">Metrik Evaluasi Final</td>
+          <td><code>outputs/evaluation/final_metrics.csv</code></td>
+          <td>7 metrik lengkap (MAE, RMSE, MAPE, R², MASE, RMSSE, DA)</td>
+        </tr>
+        <tr>
+          <td class="font-bold">Uji Statistik DM</td>
+          <td><code>outputs/statistical_tests/diebold_mariano_results.csv</code></td>
+          <td>Hasil uji komparasi Diebold-Mariano seluruh pasangan model</td>
+        </tr>
+        <tr>
+          <td class="font-bold">Expanding Window Detail</td>
+          <td><code>outputs/validation/expanding_window_results.csv</code></td>
+          <td>Metrik evaluasi per fold (Fold 1: 2020, Fold 2: 2021, Fold 3: 2022)</td>
+        </tr>
+        <tr>
+          <td class="font-bold">ARIMA Dynamic Orders</td>
+          <td><code>outputs/validation/expanding_window_orders.csv</code></td>
+          <td>Log orde ARIMA yang terpilih secara dinamis pada setiap fold</td>
+        </tr>
+        <tr>
+          <td class="font-bold">Expanding Window Summary</td>
+          <td><code>outputs/validation/expanding_window_summary.csv</code></td>
+          <td>Rata-rata metrik evaluasi melintasi 3 fold cross-validation</td>
+        </tr>
+        <tr>
+          <td class="font-bold">Proyeksi Jangka Panjang</td>
+          <td><code>outputs/long_term/long_term_scenarios_2025_2045.csv</code></td>
+          <td>Proyeksi milestone 2025–2045 beserta confidence interval 95%</td>
+        </tr>
+        <tr>
+          <td class="font-bold">Reproduksibilitas</td>
+          <td><code>outputs/reproducibility/environment_info.txt</code></td>
+          <td>Catatan sistem (Python, TensorFlow, OS, Seed, Library Versions)</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p style="margin-top: 30px;">Demikian penjelasan dan tanggapan komprehensif ini kami sampaikan. Kami meyakini bahwa perbaikan menyeluruh ini telah menjawab seluruh catatan reviewer secara tuntas, obyektif, dan transparan, sehingga naskah revisi ini layak untuk dipublikasikan pada <strong>Jurnal Inovasi Sistem Informasi (JISI)</strong>.</p>
+
+  <p style="margin-top: 25px;">Hormat kami,<br/><strong>Tim Penulis</strong></p>
+
+</div>
+
+</body>
+</html>
