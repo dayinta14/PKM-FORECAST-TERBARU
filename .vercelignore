@@ -1,0 +1,14 @@
+# Ignore large python, model, and dataset files
+venv/
+.git/
+outputs/
+models/
+DOKUMEN PENELITIAN/
+*.pdf
+*.docx
+*.ipynb
+*.py
+*.csv
+*.pkl
+*.json
+!data_saham.json

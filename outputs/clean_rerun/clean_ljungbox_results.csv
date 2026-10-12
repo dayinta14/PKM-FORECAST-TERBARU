@@ -1,0 +1,13 @@
+Ticker,Lag,Q_stat,p_value,Significant_5pct,Interpretation
+ADRO,5,5.0387,0.41117169976421014,Tidak,Gagal Menolak White Noise
+ADRO,10,8.8411,0.5472432823213099,Tidak,Gagal Menolak White Noise
+ADRO,20,26.3472,0.154647546196448,Tidak,Gagal Menolak White Noise
+PTBA,5,0.4791,0.9928682920724231,Tidak,Gagal Menolak White Noise
+PTBA,10,9.9719,0.4429655024762963,Tidak,Gagal Menolak White Noise
+PTBA,20,61.9217,3.5760325111856637e-06,Ya,Menolak White Noise (Dependensi non-linear signifikan)
+INDY,5,8.8484,0.1152661611135852,Tidak,Gagal Menolak White Noise
+INDY,10,12.7472,0.23814907546840128,Tidak,Gagal Menolak White Noise
+INDY,20,27.4338,0.12349404646365258,Tidak,Gagal Menolak White Noise
+ITMG,5,1.2397,0.9410089210053945,Tidak,Gagal Menolak White Noise
+ITMG,10,18.9583,0.040795981746339596,Ya,Menolak White Noise (Dependensi non-linear signifikan)
+ITMG,20,51.2011,0.00014873726742754666,Ya,Menolak White Noise (Dependensi non-linear signifikan)

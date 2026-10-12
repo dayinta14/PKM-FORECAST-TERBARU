@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Forecast Harga Saham Batubara IDX &mdash; Hybrid ARIMA-LSTM 2025&ndash;2045</title>
+<title>Forecast Harga Saham Batubara IDX &mdash; Hybrid ARIMA-LSTM (Clean Empirical Pipeline)</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:wght@400;600&display=swap" rel="stylesheet"/>
@@ -20,6 +20,7 @@ body{font-family:'Inter',sans-serif;background:#f5f6f8;color:#1a202c;min-height:
 .badge{font-size:.72rem;font-weight:600;padding:4px 10px;border-radius:4px;border:1px solid}
 .badge-blue{background:#ebf8ff;color:#2b6cb0;border-color:#bee3f8}
 .badge-green{background:#f0fff4;color:#276749;border-color:#c6f6d5}
+.badge-amber{background:#fffaf0;color:#c05621;border-color:#feebc8}
 #gen-time{font-size:.72rem;color:#a0aec0}
 
 /* LAYOUT */
@@ -34,7 +35,7 @@ main{max-width:1200px;margin:0 auto;padding:24px 20px}
 .dot{width:8px;height:8px;border-radius:50%;display:inline-block}
 
 /* ACCURACY CARDS */
-.acc-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px}
+.acc-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:16px}
 .acc-card{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:16px;border-top:3px solid #2b6cb0}
 .acc-card.green{border-top-color:#38a169}
 .acc-card.orange{border-top-color:#dd6b20}
@@ -43,7 +44,7 @@ main{max-width:1200px;margin:0 auto;padding:24px 20px}
 .acc-label{font-size:.68rem;font-weight:600;color:#a0aec0;text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px}
 .acc-val{font-size:1.5rem;font-weight:700;color:#2d3748;letter-spacing:-.5px}
 .acc-sub{font-size:.68rem;color:#a0aec0;margin-top:3px;line-height:1.3}
-.status-text{margin-top:8px;font-size:.78rem;font-weight:700;color:#1f2937;}
+.status-text{margin-top:8px;font-size:.78rem;font-weight:700;color:#1f2937}
 .status-good{color:#16a34a}
 .status-ok{color:#2563eb}
 .status-warning{color:#c05621}
@@ -56,13 +57,17 @@ main{max-width:1200px;margin:0 auto;padding:24px 20px}
 .card-title{font-size:.95rem;font-weight:600;color:#1a365d}
 .card-sub{font-size:.73rem;color:#a0aec0;margin-top:3px}
 
+/* NOTE BOX */
+.alert-box{background:#f8fafc;border:1px solid #e2e8f0;border-left:4px solid #3182ce;border-radius:6px;padding:12px 16px;font-size:.75rem;color:#4a5568;line-height:1.5;margin-top:12px}
+.alert-box.amber{border-left-color:#dd6b20;background:#fffaf0}
+
 /* LEGEND */
 .legend{display:flex;gap:14px;flex-wrap:wrap}
 .li{display:flex;align-items:center;gap:5px;font-size:.73rem;color:#718096}
 .ll{width:20px;height:3px;border-radius:2px;display:inline-block}
 
-/* RANGE BUTTONS */
-.rbg{display:flex;gap:5px}
+/* RANGE BUTTONS / TOGGLES */
+.rbg{display:flex;gap:5px;flex-wrap:wrap}
 .rb{padding:5px 12px;border-radius:6px;border:1px solid #e2e8f0;background:#f7fafc;color:#718096;font-size:.75rem;cursor:pointer;transition:all .15s;font-weight:500}
 .rb:hover,.rb.act{background:#2b6cb0;border-color:#2b6cb0;color:#fff}
 
@@ -80,6 +85,7 @@ thead th{background:#f7fafc;color:#718096;font-weight:600;font-size:.7rem;text-t
 tbody td{padding:8px 14px;border-bottom:1px solid #f0f4f8;color:#2d3748}
 tbody tr:hover td{background:#f7fafc}
 tbody tr:last-child td{border-bottom:none}
+.tr-highlight{background:#f0fff4!important;font-weight:600}
 .tag-train{background:#ebf8ff;color:#2b6cb0;font-size:.65rem;padding:2px 6px;border-radius:3px;font-weight:600}
 .tag-test{background:#fefcbf;color:#b7791f;font-size:.65rem;padding:2px 6px;border-radius:3px;font-weight:600}
 
@@ -94,9 +100,8 @@ tbody tr:last-child td{border-bottom:none}
 #errmsg{color:#e53e3e;font-size:.85rem;text-align:center;max-width:400px;display:none;padding:12px 16px;background:#fff5f5;border:1px solid #fed7d7;border-radius:8px}
 
 /* FOOTER */
-footer{border-top:1px solid #e2e8f0;background:#fff;padding:16px 24px;text-align:center;font-size:.72rem;color:#a0aec0;margin-top:8px}
+footer{border-top:1px solid #e2e8f0;background:#fff;padding:20px 24px;text-align:center;font-size:.75rem;color:#718096;margin-top:20px;line-height:1.6}
 
-/* ANNOTATION LINE */
 canvas{width:100%!important}
 </style>
 </head>
@@ -104,19 +109,20 @@ canvas{width:100%!important}
 
 <div id="loading">
   <div class="spin"></div>
-  <p style="color:#718096;font-size:.85rem">Memuat data...</p>
+  <p style="color:#718096;font-size:.85rem">Memuat data Clean Pipeline...</p>
   <p id="errmsg"></p>
 </div>
 
 <div class="topbar">
   <div class="topbar-inner">
     <div class="brand">
-      <h1>Forecast Harga Saham Batubara IDX &mdash; Hybrid ARIMA-LSTM 2025&ndash;2045</h1>
-      <p>ADRO &bull; PTBA &bull; INDY &bull; ITMG &nbsp;|&nbsp; Proyeksi Pemodelan Statistik Linear & Jaringan Saraf Non-Linear</p>
+      <h1>Forecast Harga Saham Batubara IDX &mdash; Hybrid ARIMA-LSTM</h1>
+      <p>ADRO &bull; PTBA &bull; INDY &bull; ITMG &nbsp;|&nbsp; Evaluasi Empiris One-Step-Ahead (h=1) Bebas Pre-IPO Bias (Revisi SINTA 2 JISI)</p>
     </div>
     <div class="badges">
-      <span class="badge badge-blue">Model: Hybrid ARIMA-LSTM</span>
-      <span class="badge badge-green">Train 80% / Test 20%</span>
+      <span class="badge badge-blue">Evaluasi: One-Step-Ahead (h=1)</span>
+      <span class="badge badge-green">Test Set: 476 Hari Bursa (2023–2024)</span>
+      <span class="badge badge-amber" id="badge-proyeksi">Proyeksi 2045: Diarsipkan</span>
       <span id="gen-time"></span>
     </div>
   </div>
@@ -127,31 +133,63 @@ canvas{width:100%!important}
   <div class="section-title">Pilih Saham</div>
   <div class="tabs" id="tabs"></div>
 
-  <!-- ACCURACY -->
-  <div class="section-title">Akurasi Model Hybrid ARIMA-LSTM (Evaluasi pada Data Testing)</div>
+  <!-- ACCURACY CARDS -->
+  <div class="section-title">Akurasi Model Hybrid ARIMA-LSTM (Evaluasi Test Set Out-of-Sample)</div>
   <div class="acc-row" id="acc-row"></div>
+
+  <!-- COMPARISON TABLE CARD -->
+  <div class="card" style="padding:18px 22px">
+    <div class="card-header" style="margin-bottom:10px">
+      <div>
+        <div class="card-title" id="cmp-table-title">Perbandingan Evaluasi 4 Model &mdash; Test Set 2023&ndash;2024 (N=476 Hari)</div>
+        <div class="card-sub">Hasil pengujian empiris tanpa data pre-IPO dan bebas look-ahead bias</div>
+      </div>
+    </div>
+    <div class="tbl-wrap" style="max-height:220px">
+      <table>
+        <thead>
+          <tr>
+            <th>Model</th>
+            <th>MAE (IDR)</th>
+            <th>RMSE (IDR)</th>
+            <th>MAPE (%)</th>
+            <th>R&sup2;</th>
+            <th>MASE</th>
+            <th>RMSSE</th>
+            <th>Directional Acc (DA %)</th>
+          </tr>
+        </thead>
+        <tbody id="tbl-models-body"></tbody>
+      </table>
+    </div>
+    <div class="alert-box">
+      <strong>Catatan Evaluasi Ilmiah:</strong> Pada data harian one-step-ahead (<em>h = 1</em>), <em>Na&iuml;ve Random Walk</em> menghasilkan MAPE terendah (1,31%&ndash;1,92%), konsisten dengan teori pasar efisien (EMH). Model <strong>Hybrid ARIMA-LSTM</strong> dan Standalone ARIMA secara konsisten menghasilkan <strong>Directional Accuracy (arah tren) tertinggi</strong> (45,3%&ndash;47,0% vs 41,3%&ndash;44,6%), menunjukkan keunggulan ekonometrika dalam mendeteksi arah pergerakan harga.
+    </div>
+  </div>
 
   <!-- TRAIN TEST CHART -->
   <div class="card">
     <div class="card-header">
       <div>
-        <div class="card-title" id="ct1">Harga Penutupan Bulanan &mdash; Train / Test / Forecast</div>
-        <div class="card-sub">Garis vertikal memisahkan data latih dan data uji</div>
+        <div class="card-title" id="ct1">Harga Penutupan Harian &mdash; Train / Test (Aktual vs Prediksi Hybrid)</div>
+        <div class="card-sub">Garis vertikal memisahkan data latih bebas pre-IPO dan data uji out-of-sample</div>
       </div>
       <div>
         <div class="legend" id="leg-main"></div>
         <div class="split-info" style="margin-top:8px">
-          <div class="split-box" style="border-color:#2b6cb0;background:#ebf8ff"></div><span>Data Train (80%)</span>
-          <div class="split-box" style="border-color:#d69e2e;background:#fefcbf"></div><span>Data Test (20%)</span>
-          <div class="split-box" style="border-color:#6b46c1;background:#faf5ff"></div><span>Forecast 2045</span>
+          <div class="split-box" style="border-color:#2b6cb0;background:#ebf8ff"></div><span id="txt-train-split">Data Train (&le; 2022)</span>
+          <div class="split-box" style="border-color:#38a169;background:#f0fff4"></div><span>Aktual Test (2023-2024)</span>
+          <div class="split-box" style="border-color:#dd6b20;background:#fffaf0"></div><span>Prediksi Hybrid (h=1)</span>
         </div>
       </div>
     </div>
-    <canvas id="chart-tt" height="80"></canvas>
+    <canvas id="chart-tt" height="85"></canvas>
   </div>
+
+  <!-- TWO TABLES: TRAIN & TEST -->
   <div class="grid2">
     <div class="card" style="margin-bottom:0">
-      <div class="card-title" style="margin-bottom:14px">Tabel Data Train</div>
+      <div class="card-title" style="margin-bottom:14px" id="lbl-tbl-train">Tabel Data Train (Harga Penutupan Harian)</div>
       <div class="tbl-wrap">
         <table>
           <thead><tr><th>Tanggal</th><th>Harga Saham (Close)</th><th>Fitur</th></tr></thead>
@@ -160,7 +198,7 @@ canvas{width:100%!important}
       </div>
     </div>
     <div class="card" style="margin-bottom:0">
-      <div class="card-title" style="margin-bottom:14px">Tabel Data Test</div>
+      <div class="card-title" style="margin-bottom:14px" id="lbl-tbl-test">Tabel Data Test (476 Hari Bursa 2023&ndash;2024)</div>
       <div class="tbl-wrap">
         <table>
           <thead><tr><th>Tanggal</th><th>Aktual</th><th>Prediksi Hybrid</th><th>Selisih (IDR)</th><th>Error (%)</th></tr></thead>
@@ -169,73 +207,94 @@ canvas{width:100%!important}
       </div>
     </div>
   </div>
-  <!-- FORECAST CHART -->
-  <div class="card">
-    <div class="card-header">
-      <div>
-        <div class="card-title" id="ct2">Forecast Harga 2025&ndash;2045</div>
-        <div class="card-sub">Simulasi Hybrid ARIMA-LSTM dengan kurva proyeksi dinamis</div>
-      </div>
-      <div>
-        <div class="rbg">
-          <button class="rb" onclick="setRange(5,this)">5 Thn</button>
-          <button class="rb" onclick="setRange(10,this)">10 Thn</button>
-          <button class="rb act" onclick="setRange(0,this)">Semua</button>
+
+  <!-- GRID BAWAH: TEST SET MULTI-MODEL COMPARISON & EXPANDING WINDOW -->
+  <div class="grid2" style="margin-top:18px">
+    <div class="card" style="margin-bottom:0">
+      <div class="card-header" style="margin-bottom:8px">
+        <div>
+          <div class="card-title">Perbandingan Model pada Test Set (2023&ndash;2024)</div>
+          <div class="card-sub">Pilih model untuk ditinjau bersama harga aktual</div>
+        </div>
+        <div class="rbg" id="model-toggles">
+          <button class="rb act" onclick="toggleDataset('Hybrid',this)">Hybrid</button>
+          <button class="rb act" onclick="toggleDataset('ARIMA',this)">ARIMA</button>
+          <button class="rb act" onclick="toggleDataset('NRW',this)">NRW</button>
+          <button class="rb" onclick="toggleDataset('LSTM',this)">LSTM</button>
         </div>
       </div>
-    </div>
-    <canvas id="chart-fc" height="75"></canvas>
-  </div>
-
-  <!-- GRID BAWAH -->
-  <div class="grid2">
-    <div class="card" style="margin-bottom:0">
-      <div class="card-title" style="margin-bottom:14px">Perbandingan Prediksi Hybrid vs Aktual (Test Set)</div>
       <canvas id="chart-cmp-tt" height="140"></canvas>
     </div>
     <div class="card" style="margin-bottom:0">
-      <div class="card-title" style="margin-bottom:12px">Perbandingan Forecast Semua Saham 2025&ndash;2045</div>
-      <canvas id="chart-all" height="140"></canvas>
+      <div class="card-header" style="margin-bottom:8px">
+        <div>
+          <div class="card-title">Expanding-Window Cross-Validation (3 Folds)</div>
+          <div class="card-sub">Stabilitas MAPE rata-rata antar rezim krisis & komoditas (2020, 2021, 2022)</div>
+        </div>
+      </div>
+      <canvas id="chart-ew" height="140"></canvas>
     </div>
   </div>
 
-  <!-- TABLE -->
+  <!-- PROYEKSI 2025-2045 ARSIP CARD -->
   <div class="card" style="margin-top:18px">
-    <div class="card-title" style="margin-bottom:14px">Tabel Proyeksi Harga per Tahun (2025&ndash;2045) &mdash; Nilai Desember</div>
-    <div class="tbl-wrap">
-      <table>
-        <thead><tr><th>Tahun</th><th>ADRO (IDR)</th><th>PTBA (IDR)</th><th>INDY (IDR)</th><th>ITMG (IDR)</th></tr></thead>
-        <tbody id="tbl-body"></tbody>
-      </table>
+    <div class="card-header" style="margin-bottom:10px">
+      <div>
+        <div class="card-title">Status Proyeksi Jangka Panjang 2025&ndash;2045 &mdash; Diarsipkan Sesuai Review JISI</div>
+        <div class="card-sub">Catatan penelaah sejawat (peer-reviewer) terkait validitas proyeksi 20 tahun univariat</div>
+      </div>
+      <div>
+        <button class="rb" id="btn-toggle-archive" onclick="toggleArchiveSection()">Lihat Arsip Simulasi Proyeksi</button>
+      </div>
+    </div>
+    <div class="alert-box amber" style="margin-top:0">
+      <strong>Keterangan Penonaktifan:</strong> Berdasarkan catatan reviewer <em>Journal of Information Systems and Informatics</em> (SINTA 2), proyeksi univariat 20 tahun (2025&ndash;2045) memiliki tingkat ketidakpastian struktural yang tinggi dan belum tervalidasi oleh faktor fundamental makroekonomi. Oleh karena itu, kurva proyeksi 2045 <strong>dinonaktifkan sementara dari visualisasi utama</strong>. Seluruh data simulasi lama tetap tersimpan secara aman dalam arsip <code>data_saham.json</code> untuk keperluan reproduksibilitas ilmiah.
+    </div>
+
+    <div id="archive-section" style="display:none;margin-top:16px">
+      <div class="card-title" style="font-size:.85rem;margin-bottom:10px">Tabel Arsip Simulasi Proyeksi Tahunan (2025&ndash;2045) &mdash; Nilai Desember (Unvalidated Archive)</div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Tahun</th><th>ADRO (IDR)</th><th>PTBA (IDR)</th><th>INDY (IDR)</th><th>ITMG (IDR)</th></tr></thead>
+          <tbody id="tbl-body"></tbody>
+        </table>
+      </div>
     </div>
   </div>
 </main>
 
 <footer>
-  Sumber Data: Yahoo Finance &nbsp;|&nbsp; Model: Hybrid ARIMA-LSTM &nbsp;|&nbsp; Periode Historis: 2004&ndash;2024 &nbsp;|&nbsp; Forecast: Jan 2025&ndash;Des 2045 &nbsp;|&nbsp; Penelitian FMIPA &mdash; Dayinta Agustina Zanuel
+  Sumber Data: Bursa Efek Indonesia / Yahoo Finance (Data Harian Bebas Pre-IPO) &nbsp;|&nbsp; Model: Hybrid ARIMA-LSTM &bull; Standalone ARIMA &bull; Na&iuml;ve Random Walk &bull; Standalone LSTM<br/>
+  Protokol: One-Step-Ahead Rolling Forecast (h=1) &nbsp;|&nbsp; Periode Historis: 2004&ndash;2024 &nbsp;|&nbsp; Penelitian FMIPA &mdash; Dayinta Agustina Zanuel<br/>
+  <span style="font-size:.7rem;color:#a0aec0;display:inline-block;margin-top:6px">
+    <strong>Disclaimer Akademik:</strong> Dashboard ini merupakan media diseminasi visualisasi hasil penelitian ilmiah Hybrid ARIMA-LSTM untuk revisi jurnal SINTA 2, bukan sistem rekomendasi investasi atau saran finansial terlisensi.
+  </span>
 </footer>
 
 <script>
 const CMAP = {
-  ADRO:{h:'#2b6cb0',test:'#38a169',pred:'#dd6b20',fc:'#6b46c1'},
-  PTBA:{h:'#2c7a7b',test:'#38a169',pred:'#dd6b20',fc:'#b7791f'},
-  INDY:{h:'#c05621',test:'#38a169',pred:'#dd6b20',fc:'#276749'},
-  ITMG:{h:'#702459',test:'#38a169',pred:'#dd6b20',fc:'#2b6cb0'},
+  ADRO:{h:'#2b6cb0',test:'#38a169',pred:'#dd6b20',arima:'#2b6cb0',nrw:'#718096',lstm:'#e53e3e'},
+  PTBA:{h:'#2c7a7b',test:'#38a169',pred:'#dd6b20',arima:'#2c7a7b',nrw:'#718096',lstm:'#e53e3e'},
+  INDY:{h:'#c05621',test:'#38a169',pred:'#dd6b20',arima:'#c05621',nrw:'#718096',lstm:'#e53e3e'},
+  ITMG:{h:'#702459',test:'#38a169',pred:'#dd6b20',arima:'#702459',nrw:'#718096',lstm:'#e53e3e'},
 };
-const ALL_C=['#2b6cb0','#2c7a7b','#c05621','#702459'];
 
-let DATA=null,cur='ADRO',fcChart=null,ttChart=null,cmpChart=null,allChart=null;
+let DATA=null,cur='ADRO',ttChart=null,cmpChart=null,ewChart=null;
+let activeModels = { Hybrid: true, ARIMA: true, NRW: true, LSTM: false };
 
-const ts = s=>new Date(s+'T12:00:00').getTime();
+const ts = s => new Date(s + 'T12:00:00').getTime();
+
 function fmtDate(ms){
   const d=new Date(ms);
-  return ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Ags','Sep','Okt','Nov','Des'][d.getMonth()]+' '+d.getFullYear();
+  const mo=['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Ags','Sep','Okt','Nov','Des'][d.getMonth()];
+  return d.getDate() + ' ' + mo + ' ' + d.getFullYear();
 }
+
 function fmt(v){
-  if(!v&&v!==0)return'--';
-  if(v>=1e6)return(v/1e6).toFixed(2)+'M';
-  if(v>=1e3)return(v/1e3).toFixed(1)+'K';
-  return Number(v).toLocaleString('id-ID',{maximumFractionDigits:0});
+  if(!v && v!==0) return '--';
+  if(Math.abs(v) >= 1e6) return (v/1e6).toFixed(2)+'M';
+  if(Math.abs(v) >= 1e3) return Number(v).toLocaleString('id-ID',{maximumFractionDigits:1});
+  return Number(v).toLocaleString('id-ID',{maximumFractionDigits:2});
 }
 
 const TOOLTIP_BASE={
@@ -243,7 +302,7 @@ const TOOLTIP_BASE={
   titleColor:'#2d3748',bodyColor:'#4a5568',padding:10,
   callbacks:{
     title:i=>fmtDate(i[0].parsed.x),
-    label:c=>` ${c.dataset.label}: IDR ${c.parsed.y.toLocaleString('id-ID',{maximumFractionDigits:0})}`
+    label:c=>` ${c.dataset.label}: IDR ${c.parsed.y.toLocaleString('id-ID',{maximumFractionDigits:1})}`
   }
 };
 const SCALE_X=(min,max)=>({type:'time',time:{unit:'year',displayFormats:{year:'yyyy'}},min,max,grid:{color:'#f0f4f8'},ticks:{color:'#a0aec0',maxTicksLimit:18}});
@@ -263,11 +322,11 @@ function init(){
   document.getElementById('loading').style.display='none';
   if(DATA.meta?.generated_at){
     const d=new Date(DATA.meta.generated_at);
-    document.getElementById('gen-time').textContent='Data: '+d.toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'});
+    document.getElementById('gen-time').textContent='Data Bersih: '+d.toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'});
   }
   buildTabs();
-  buildAllChart();
-  buildTable();
+  buildArchiveTable();
+  buildEWChart();
   switchTicker('ADRO');
 }
 
@@ -289,41 +348,77 @@ function switchTicker(t){
   document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
   document.getElementById('tab-'+t)?.classList.add('active');
   buildAccCards(t);
+  buildModelComparisonTable(t);
   buildTTChart(t);
-  buildFcChart(t,0);
   buildCmpChart(t);
   buildTrainTestTables(t);
-  document.getElementById('ct1').textContent=t+' — Harga Penutupan Bulanan (Train / Test / Forecast)';
-  document.getElementById('ct2').textContent=t+' — Forecast Harga 2025–2045';
-  document.querySelectorAll('.rb').forEach(b=>b.classList.remove('act'));
-  document.querySelector('.rb:last-child').classList.add('act');
+  document.getElementById('ct1').textContent=t+' — Harga Penutupan Harian (Data Train vs Aktual Test vs Prediksi Hybrid)';
+  document.getElementById('cmp-table-title').textContent=t+' — Perbandingan Evaluasi 4 Model (Test Set 2023–2024, N=476)';
+  document.getElementById('lbl-tbl-train').textContent=`${t} — Tabel Data Train (N=${(DATA.stocks[t].historical||[]).length} Hari Latih)`;
+  document.getElementById('lbl-tbl-test').textContent=`${t} — Tabel Data Test (N=${(DATA.stocks[t].test_actual||[]).length} Hari Bursa)`;
 }
 
 function buildAccCards(t){
   const s=DATA.stocks[t];if(!s||s.error)return;
-  const m=s.metrics,hist=s.historical||[],fc=s.forecast||[];
+  const m=s.metrics,hist=s.historical||[];
   const last=hist.length?hist[hist.length-1].value:0;
-  const fc45=fc.length?fc[fc.length-1].value:0;
-  const chg=last?((fc45-last)/last*100):0;
-  const statusText = m.MAPE < 7 ? 'Sangat Baik' : m.MAPE < 10 ? 'Baik' : m.MAPE < 20 ? 'Cukup' : 'Kurang Baik';
-  const statusClass = m.MAPE < 7 ? 'status-good' : m.MAPE < 10 ? 'status-ok' : m.MAPE < 20 ? 'status-warning' : 'status-bad';
-  const mapeClass=m.MAPE<7?'acc-good':m.MAPE<10?'acc-ok':m.MAPE<20?'acc-bad':'acc-bad';
+  
+  // Status label based on MAPE
+  const statusText = m.MAPE < 2 ? 'Sangat Baik (<2%)' : m.MAPE < 5 ? 'Baik (<5%)' : m.MAPE < 10 ? 'Cukup (<10%)' : 'Perlu Evaluasi';
+  const statusClass = m.MAPE < 2 ? 'status-good' : m.MAPE < 5 ? 'status-ok' : m.MAPE < 10 ? 'status-warning' : 'status-bad';
+  const mapeClass = m.MAPE < 2 ? 'acc-good' : m.MAPE < 5 ? 'acc-ok' : 'acc-bad';
+
   document.getElementById('acc-row').innerHTML=`
-    <div class="acc-card"><div class="acc-label">MAE</div><div class="acc-val">${fmt(m.MAE)}</div><div class="acc-sub">Mean Absolute Error (IDR)</div></div>
-    <div class="acc-card green"><div class="acc-label">RMSE</div><div class="acc-val">${fmt(m.RMSE)}</div><div class="acc-sub">Root Mean Sq. Error (IDR)</div></div>
+    <div class="acc-card"><div class="acc-label">MAE (IDR)</div><div class="acc-val">${fmt(m.MAE)}</div><div class="acc-sub">Mean Absolute Error</div></div>
+    <div class="acc-card green"><div class="acc-label">RMSE (IDR)</div><div class="acc-val">${fmt(m.RMSE)}</div><div class="acc-sub">Root Mean Sq. Error</div></div>
     <div class="acc-card orange"><div class="acc-label">MAPE</div><div class="acc-val ${mapeClass}">${m.MAPE.toFixed(2)}%</div><div class="acc-sub status-text ${statusClass}">Status: ${statusText}</div></div>
-    <div class="acc-card purple"><div class="acc-label">Harga Terakhir (2024)</div><div class="acc-val">${fmt(last)}</div><div class="acc-sub">IDR • ${hist.length?hist[hist.length-1].date:'--'}</div></div>
-    <div class="acc-card teal"><div class="acc-label">Proyeksi Des 2045</div><div class="acc-val">${fmt(fc45)}</div><div class="acc-sub class='${chg>=0?'acc-good':'acc-bad'}'">Perubahan: <span class="${chg>=0?'acc-good':'acc-bad'}">${chg>=0?'+':''}${chg.toFixed(1)}%</span></div></div>
-    <div class="acc-card"><div class="acc-label">Order ARIMA</div><div class="acc-val" style="font-size:1.2rem">(${(s.order||[]).join(',')})</div><div class="acc-sub">p, d, q</div></div>
+    <div class="acc-card purple"><div class="acc-label">Koefisien R&sup2;</div><div class="acc-val">${m.R2.toFixed(4)}</div><div class="acc-sub">Determinasi Out-of-Sample</div></div>
+    <div class="acc-card teal"><div class="acc-label">Directional Acc.</div><div class="acc-val">${m.DA.toFixed(2)}%</div><div class="acc-sub">Arah Tren &bull; MASE: ${m.MASE.toFixed(3)}</div></div>
+    <div class="acc-card"><div class="acc-label">Order ARIMA</div><div class="acc-val" style="font-size:1.25rem">(${(s.order||[]).join(', ')})</div><div class="acc-sub">Grid Search AIC (p, d, q)</div></div>
   `;
+}
+
+function buildModelComparisonTable(t){
+  const s=DATA.stocks[t]; if(!s||!s.models) return;
+  const tbody = document.getElementById('tbl-models-body');
+  const models = s.models;
+  const orderList = ['NRW', 'ARIMA', 'LSTM', 'Hybrid'];
+  
+  let html = '';
+  orderList.forEach(mKey => {
+    const item = models[mKey];
+    if(!item) return;
+    const isHyb = mKey === 'Hybrid';
+    const isNrw = mKey === 'NRW';
+    const trClass = isHyb ? ' class="tr-highlight"' : '';
+    const label = isHyb ? `<strong>Hybrid ARIMA-LSTM</strong>` : 
+                 (isNrw ? `Na&iuml;ve Random Walk (NRW)` : 
+                 (mKey === 'ARIMA' ? `Standalone ARIMA(${(s.order||[]).join(',')})` : `Standalone LSTM`));
+    
+    html += `<tr${trClass}>
+      <td>${label}</td>
+      <td>${fmt(item.MAE)}</td>
+      <td>${fmt(item.RMSE)}</td>
+      <td>${item.MAPE.toFixed(2)}%</td>
+      <td>${item.R2.toFixed(4)}</td>
+      <td>${item.MASE.toFixed(4)}</td>
+      <td>${item.RMSSE.toFixed(4)}</td>
+      <td><strong>${item.DA.toFixed(2)}%</strong></td>
+    </tr>`;
+  });
+  tbody.innerHTML = html;
 }
 
 function buildTrainTestTables(t){
   const s = DATA.stocks[t];
   if(!s||s.error) return;
-  const trainRows = (s.historical||[]).map(p =>
-    `<tr><td>${p.date}</td><td>${fmt(p.value)}</td><td>Harga penutupan</td></tr>`
+  
+  // Historical Train Table
+  const trainRows = (s.historical||[]).slice(-250).map(p =>
+    `<tr><td>${p.date}</td><td>${fmt(p.value)}</td><td><span class="tag-train">Train Bebas Pre-IPO</span></td></tr>`
   ).join('');
+  
+  // Test Table (all 476 trading days)
   const tAct = s.test_actual||[];
   const tPred = s.test_predicted||[];
   const maxRows = Math.max(tAct.length, tPred.length);
@@ -340,37 +435,43 @@ function buildTrainTestTables(t){
   document.getElementById('tbl-test-body').innerHTML = testRows.join('');
 }
 
-// TRAIN/TEST Chart — tampilkan histori dengan pembatas zona train/test/forecast
+// MAIN TRAIN/TEST CHART
 function buildTTChart(t){
   const s=DATA.stocks[t];if(!s||s.error)return;
-  const hist=s.historical||[],tAct=s.test_actual||[],tPred=s.test_predicted||[],fc=s.forecast||[];
+  const hist=s.historical||[],tAct=s.test_actual||[],tPred=s.test_predicted||[];
   const splitDate=tAct.length?ts(tAct[0].date):null;
-  const fcStart=fc.length?ts(fc[0].date):null;
+  const testEnd=tAct.length?ts(tAct[tAct.length-1].date):null;
 
-  const dsHist={label:'Train',data:hist.filter(p=>splitDate&&ts(p.date)<splitDate).map(p=>({x:ts(p.date),y:p.value})),
-    borderColor:'#2b6cb0',backgroundColor:'rgba(43,108,176,.08)',borderWidth:1.8,pointRadius:0,tension:.3,fill:true};
-  const dsTA={label:'Aktual Test',data:tAct.map(p=>({x:ts(p.date),y:p.value})),
-    borderColor:'#38a169',borderWidth:2,pointRadius:2.5,pointBackgroundColor:'#38a169',tension:.3};
-  const dsTP={label:'Prediksi Test',data:tPred.map(p=>({x:ts(p.date),y:p.value})),
-    borderColor:'#dd6b20',borderDash:[5,4],borderWidth:2,pointRadius:0,tension:.3};
-  const dsFC={label:'Forecast 2025-2045',data:fc.map(p=>({x:ts(p.date),y:p.value})),
-    borderColor:'#6b46c1',backgroundColor:'rgba(107,70,193,.05)',borderDash:[7,3],borderWidth:1.8,pointRadius:0,tension:.3,fill:true};
+  const dsHist={
+    label:'Data Train (s.d. 2022)',
+    data:hist.map(p=>({x:ts(p.date),y:p.value})),
+    borderColor:'#2b6cb0',backgroundColor:'rgba(43,108,176,.08)',borderWidth:1.5,pointRadius:0,tension:.1,fill:true
+  };
+  const dsTA={
+    label:'Aktual Test (2023-2024)',
+    data:tAct.map(p=>({x:ts(p.date),y:p.value})),
+    borderColor:'#38a169',borderWidth:2,pointRadius:0,tension:.1
+  };
+  const dsTP={
+    label:'Prediksi Hybrid (h=1)',
+    data:tPred.map(p=>({x:ts(p.date),y:p.value})),
+    borderColor:'#dd6b20',borderDash:[4,3],borderWidth:1.8,pointRadius:0,tension:.1
+  };
 
   const plugins=[{
     id:'zones',
     beforeDraw(chart){
       const {ctx,chartArea:{left,right,top,bottom},scales:{x}}=chart;
-      if(!splitDate||!fcStart)return;
+      if(!splitDate)return;
       const xSplit=x.getPixelForValue(splitDate);
-      const xFc=x.getPixelForValue(fcStart);
       ctx.save();
-      ctx.fillStyle='rgba(235,248,255,.4)';ctx.fillRect(left,top,xSplit-left,bottom-top);
-      ctx.fillStyle='rgba(254,252,191,.35)';ctx.fillRect(xSplit,top,xFc-xSplit,bottom-top);
-      ctx.fillStyle='rgba(250,245,255,.35)';ctx.fillRect(xFc,top,right-xFc,bottom-top);
-      ctx.strokeStyle='#a0aec0';ctx.lineWidth=1;ctx.setLineDash([4,3]);
+      // Train zone shading
+      ctx.fillStyle='rgba(235,248,255,.45)';ctx.fillRect(left,top,xSplit-left,bottom-top);
+      // Test zone shading
+      ctx.fillStyle='rgba(240,255,244,.45)';ctx.fillRect(xSplit,top,right-xSplit,bottom-top);
+      // Boundary line
+      ctx.strokeStyle='#a0aec0';ctx.lineWidth=1.2;ctx.setLineDash([4,3]);
       ctx.beginPath();ctx.moveTo(xSplit,top);ctx.lineTo(xSplit,bottom);ctx.stroke();
-      ctx.strokeStyle='#b794f4';
-      ctx.beginPath();ctx.moveTo(xFc,top);ctx.lineTo(xFc,bottom);ctx.stroke();
       ctx.restore();
     }
   }];
@@ -378,92 +479,130 @@ function buildTTChart(t){
   document.getElementById('leg-main').innerHTML =
     `<div class="li"><span class="ll" style="background:#2b6cb0"></span>Data Train</div>`+
     `<div class="li"><span class="ll" style="background:#38a169"></span>Aktual Test</div>`+
-    `<div class="li"><span class="ll" style="background:#dd6b20"></span>Prediksi Test</div>`+
-    `<div class="li"><span class="ll" style="background:#6b46c1"></span>Forecast</div>`;
+    `<div class="li"><span class="ll" style="background:#dd6b20"></span>Prediksi Hybrid</div>`;
 
   if(ttChart)ttChart.destroy();
+  const firstDate = hist.length ? ts(hist[0].date) : ts('2004-01-01');
   ttChart=new Chart(document.getElementById('chart-tt'),{
-    type:'line',data:{datasets:[dsHist,dsTA,dsTP,dsFC]},
+    type:'line',data:{datasets:[dsHist,dsTA,dsTP]},
     plugins,
-    options:{responsive:true,interaction:{mode:'x',intersect:false},animation:{duration:300},
-      plugins:{legend:{labels:{color:'#718096',font:{size:11},boxWidth:18}},tooltip:{...TOOLTIP_BASE,backgroundColor:'#fff'}},
-      scales:{x:{...SCALE_X(ts('2005-01-01'),ts('2046-01-01'))},y:{...SCALE_Y}}}
+    options:{responsive:true,interaction:{mode:'x',intersect:false},animation:{duration:250},
+      plugins:{legend:{labels:{color:'#718096',font:{size:11},boxWidth:18}},tooltip:{...TOOLTIP_BASE}},
+      scales:{x:{...SCALE_X(firstDate, ts('2025-02-01'))},y:{...SCALE_Y}}}
   });
 }
 
-// FORECAST-ONLY Chart
-function buildFcChart(t,cutYears){
-  const s=DATA.stocks[t];if(!s||s.error)return;
-  const fc=s.forecast||[];
-  let minTs=ts('2025-01-01');
-  if(cutYears>0){const d=new Date();d.setFullYear(d.getFullYear()-cutYears+20);minTs=d.getTime();}
-
-  if(fcChart)fcChart.destroy();
-  fcChart=new Chart(document.getElementById('chart-fc'),{
-    type:'line',
-    data:{datasets:[{label:'Forecast '+t,data:fc.map(p=>({x:ts(p.date),y:p.value})),
-      borderColor:CMAP[t]?.fc||'#6b46c1',backgroundColor:(CMAP[t]?.fc||'#6b46c1')+'14',
-      borderWidth:1.8,pointRadius:0,tension:.3,fill:true}]},
-    options:{responsive:true,interaction:{mode:'x',intersect:false},animation:{duration:300},
-      plugins:{legend:{display:false},tooltip:{...TOOLTIP_BASE}},
-      scales:{x:{...SCALE_X(ts('2025-01-01'),ts('2046-01-01'))},y:{...SCALE_Y}}}
-  });
-}
-
-function setRange(y,btn){
-  document.querySelectorAll('.rb').forEach(b=>b.classList.remove('act'));btn.classList.add('act');
-  buildFcChart(cur,y);
-}
-
-// TEST Actual vs Predicted
+// TEST SET MULTI-MODEL COMPARISON CHART
 function buildCmpChart(t){
   const s=DATA.stocks[t];if(!s||s.error)return;
-  const tAct=s.test_actual||[],tPred=s.test_predicted||[];
+  const tModels=s.test_models||[];
+
+  const dsAct = {
+    label:'Aktual',data:tModels.map(p=>({x:ts(p.date),y:p.actual})),
+    borderColor:'#1a202c',borderWidth:2,pointRadius:0,tension:.1
+  };
+  const dsHyb = {
+    label:'Hybrid ARIMA-LSTM',data:tModels.map(p=>({x:ts(p.date),y:p.hybrid})),
+    borderColor:'#38a169',borderWidth:1.8,pointRadius:0,tension:.1,hidden:!activeModels.Hybrid
+  };
+  const dsAri = {
+    label:`ARIMA (${(s.order||[]).join(',')})`,data:tModels.map(p=>({x:ts(p.date),y:p.arima})),
+    borderColor:'#2b6cb0',borderDash:[4,3],borderWidth:1.5,pointRadius:0,tension:.1,hidden:!activeModels.ARIMA
+  };
+  const dsNrw = {
+    label:'Naïve Random Walk',data:tModels.map(p=>({x:ts(p.date),y:p.nrw})),
+    borderColor:'#718096',borderDash:[2,2],borderWidth:1.2,pointRadius:0,tension:.1,hidden:!activeModels.NRW
+  };
+  const dsLst = {
+    label:'LSTM Standalone',data:tModels.map(p=>({x:ts(p.date),y:p.lstm})),
+    borderColor:'#dd6b20',borderWidth:1.2,pointRadius:0,tension:.1,hidden:!activeModels.LSTM
+  };
+
   if(cmpChart)cmpChart.destroy();
   cmpChart=new Chart(document.getElementById('chart-cmp-tt'),{
     type:'line',
-    data:{datasets:[
-      {label:'Aktual',data:tAct.map(p=>({x:ts(p.date),y:p.value})),borderColor:'#38a169',borderWidth:2,pointRadius:2,tension:.3},
-      {label:'Prediksi ARIMA',data:tPred.map(p=>({x:ts(p.date),y:p.value})),borderColor:'#dd6b20',borderDash:[5,4],borderWidth:2,pointRadius:0,tension:.3},
-    ]},
-    options:{responsive:true,interaction:{mode:'x',intersect:false},animation:{duration:300},
-      plugins:{legend:{labels:{color:'#718096',font:{size:11},boxWidth:16}},tooltip:{...TOOLTIP_BASE}},
-      scales:{x:{...SCALE_X(null,null),time:{unit:'month',displayFormats:{month:'MMM yy'}}},y:{...SCALE_Y}}}
+    data:{datasets:[dsAct,dsHyb,dsAri,dsNrw,dsLst]},
+    options:{responsive:true,interaction:{mode:'x',intersect:false},animation:{duration:250},
+      plugins:{legend:{labels:{color:'#718096',font:{size:10},boxWidth:14}},tooltip:{...TOOLTIP_BASE}},
+      scales:{
+        x:{type:'time',time:{unit:'month',displayFormats:{month:'MMM yy'}},grid:{color:'#f0f4f8'},ticks:{color:'#a0aec0',maxTicksLimit:12}},
+        y:{...SCALE_Y}
+      }}
   });
 }
 
-// ALL STOCKS comparison
-function buildAllChart(){
-  const tickers=Object.keys(DATA.stocks);
-  const datasets=tickers.map((t,i)=>({
-    label:t,data:(DATA.stocks[t].forecast||[]).map(p=>({x:ts(p.date),y:p.value})),
-    borderColor:ALL_C[i],borderWidth:1.8,pointRadius:0,tension:.3
-  }));
-  if(allChart)allChart.destroy();
-  allChart=new Chart(document.getElementById('chart-all'),{
-    type:'line',data:{datasets},
-    options:{responsive:true,interaction:{mode:'x',intersect:false},animation:{duration:300},
-      plugins:{legend:{labels:{color:'#718096',font:{size:11},boxWidth:16}},tooltip:{...TOOLTIP_BASE}},
-      scales:{x:{...SCALE_X(ts('2025-01-01'),ts('2046-01-01'))},y:{...SCALE_Y}}}
+function toggleDataset(mName, btn){
+  activeModels[mName] = !activeModels[mName];
+  if(activeModels[mName]) btn.classList.add('act');
+  else btn.classList.remove('act');
+  buildCmpChart(cur);
+}
+
+// EXPANDING WINDOW BAR CHART
+function buildEWChart(){
+  const tickers = Object.keys(DATA.stocks);
+  const models = ['NRW', 'ARIMA', 'LSTM', 'Hybrid'];
+  const colors = { NRW: '#718096', ARIMA: '#2b6cb0', LSTM: '#dd6b20', Hybrid: '#38a169' };
+  
+  const datasets = models.map(m => {
+    return {
+      label: m === 'Hybrid' ? 'Hybrid ARIMA-LSTM' : (m === 'ARIMA' ? 'ARIMA' : (m === 'NRW' ? 'NRW' : 'LSTM Standalone')),
+      data: tickers.map(t => {
+        const ew = DATA.stocks[t]?.expanding_window_cv;
+        return ew && ew[m] ? ew[m].MAPE : 0;
+      }),
+      backgroundColor: colors[m]
+    };
+  });
+
+  if(ewChart) ewChart.destroy();
+  ewChart = new Chart(document.getElementById('chart-ew'),{
+    type: 'bar',
+    data: { labels: tickers, datasets },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { labels: { color: '#718096', font: { size: 10 }, boxWidth: 12 } },
+        tooltip: { callbacks: { label: c => ` ${c.dataset.label}: ${c.parsed.y.toFixed(2)}% MAPE` } }
+      },
+      scales: {
+        x: { grid: { display: false }, ticks: { color: '#4a5568', font: { weight: '600' } } },
+        y: { grid: { color: '#f0f4f8' }, ticks: { color: '#a0aec0', callback: v => v + '%' } }
+      }
+    }
   });
 }
 
-// TABLE
-function buildTable(){
+// ARCHIVED PROJECTION TABLE
+function buildArchiveTable(){
   const tb=document.getElementById('tbl-body');
   const tickers=Object.keys(DATA.stocks);
   const ymap={};
-  for(let y=2025;y<=2045;y++)ymap[y]={};
+  for(let y=2025;y<=2045;y++) ymap[y]={};
   tickers.forEach(t=>{
-    (DATA.stocks[t].forecast||[]).forEach(p=>{
-      const yr=+p.date.slice(0,4),mo=+p.date.slice(5,7);
-      if(yr>=2025&&yr<=2045&&(!ymap[yr][t]||mo===12))ymap[yr][t]=p.value;
+    (DATA.stocks[t].forecast_archive||[]).forEach(p=>{
+      const yr=+p.date.slice(0,4), mo=+p.date.slice(5,7);
+      if(yr>=2025&&yr<=2045&&(!ymap[yr][t]||mo===12)) ymap[yr][t]=p.value;
     });
   });
   for(let y=2025;y<=2045;y++){
     const tr=document.createElement('tr');
     tr.innerHTML=`<td><strong>${y}</strong></td>`+tickers.map(t=>`<td>${fmt(ymap[y][t])}</td>`).join('');
     tb.appendChild(tr);
+  }
+}
+
+function toggleArchiveSection(){
+  const sec = document.getElementById('archive-section');
+  const btn = document.getElementById('btn-toggle-archive');
+  if(sec.style.display === 'none'){
+    sec.style.display = 'block';
+    btn.textContent = 'Sembunyikan Arsip Simulasi';
+    btn.classList.add('act');
+  } else {
+    sec.style.display = 'none';
+    btn.textContent = 'Lihat Arsip Simulasi Proyeksi';
+    btn.classList.remove('act');
   }
 }
 </script>

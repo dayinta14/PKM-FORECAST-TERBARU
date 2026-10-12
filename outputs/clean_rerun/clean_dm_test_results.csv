@@ -1,0 +1,25 @@
+Ticker,Comparison,DM_Statistic,p_value,Significant_5pct,Superior_Model
+ADRO,Hybrid vs ARIMA,0.8145,0.4153376621481566,Tidak,Ekuivalen (Tidak beda signifikan)
+ADRO,Hybrid vs LSTM,-13.425,0.0,Ya,Hybrid
+ADRO,Hybrid vs NRW,-0.6156,0.5381736497798335,Tidak,Ekuivalen (Tidak beda signifikan)
+ADRO,ARIMA vs LSTM,-13.5396,0.0,Ya,ARIMA
+ADRO,ARIMA vs NRW,-0.8934,0.3716515426830158,Tidak,Ekuivalen (Tidak beda signifikan)
+ADRO,LSTM vs NRW,13.3986,0.0,Ya,NRW
+PTBA,Hybrid vs ARIMA,0.2147,0.829983992595777,Tidak,Ekuivalen (Tidak beda signifikan)
+PTBA,Hybrid vs LSTM,-1.3334,0.18239766834002547,Tidak,Ekuivalen (Tidak beda signifikan)
+PTBA,Hybrid vs NRW,1.4313,0.15235070525500993,Tidak,Ekuivalen (Tidak beda signifikan)
+PTBA,ARIMA vs LSTM,-1.3968,0.16247255004932093,Tidak,Ekuivalen (Tidak beda signifikan)
+PTBA,ARIMA vs NRW,1.9982,0.045693008327854834,Ya,NRW
+PTBA,LSTM vs NRW,1.509,0.13130337105510903,Tidak,Ekuivalen (Tidak beda signifikan)
+INDY,Hybrid vs ARIMA,-0.6614,0.5083502555175075,Tidak,Ekuivalen (Tidak beda signifikan)
+INDY,Hybrid vs LSTM,-5.5876,2.302534896081454e-08,Ya,Hybrid
+INDY,Hybrid vs NRW,4.3197,1.5621390464515272e-05,Ya,NRW
+INDY,ARIMA vs LSTM,-5.5619,2.668075560485761e-08,Ya,ARIMA
+INDY,ARIMA vs NRW,4.3089,1.6406740803498465e-05,Ya,NRW
+INDY,LSTM vs NRW,6.2973,3.02918357064641e-10,Ya,NRW
+ITMG,Hybrid vs ARIMA,1.321,0.18649142483556824,Tidak,Ekuivalen (Tidak beda signifikan)
+ITMG,Hybrid vs LSTM,-22.6013,0.0,Ya,Hybrid
+ITMG,Hybrid vs NRW,4.0,6.334609264246893e-05,Ya,NRW
+ITMG,ARIMA vs LSTM,-22.5505,0.0,Ya,ARIMA
+ITMG,ARIMA vs NRW,4.0126,6.0065620503424455e-05,Ya,NRW
+ITMG,LSTM vs NRW,23.1555,0.0,Ya,NRW
