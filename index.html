@@ -23,6 +23,60 @@ body{font-family:'Inter',sans-serif;background:#f5f6f8;color:#1a202c;min-height:
 .badge-amber{background:#fffaf0;color:#c05621;border-color:#feebc8}
 #gen-time{font-size:.72rem;color:#a0aec0}
 
+/* TOP NAV TABS */
+.nav-tabs{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.nav-tab{
+  font-family:'Inter',sans-serif;
+  font-size:.76rem;
+  font-weight:600;
+  padding:6px 14px;
+  border-radius:6px;
+  border:1px solid #cbd5e0;
+  background:#fff;
+  color:#4a5568;
+  cursor:pointer;
+  transition:all .18s ease;
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  box-shadow:0 1px 2px rgba(0,0,0,.03);
+}
+.nav-tab:hover{
+  background:#f7fafc;
+  border-color:#a0aec0;
+  color:#2b6cb0;
+  transform:translateY(-1px);
+}
+.nav-tab.active{
+  background:#2b6cb0;
+  border-color:#2b6cb0;
+  color:#fff;
+  box-shadow:0 2px 5px rgba(43,108,176,.28);
+}
+.tab-badge-num{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:18px;
+  height:18px;
+  border-radius:50%;
+  font-size:.65rem;
+  font-weight:700;
+  background:#edf2f7;
+  color:#4a5568;
+}
+.nav-tab.active .tab-badge-num{
+  background:rgba(255,255,255,.25);
+  color:#fff;
+}
+.tab-pane{
+  animation:fadeIn .2s ease-in-out;
+}
+@keyframes fadeIn{
+  from{opacity:0;transform:translateY(3px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
 /* LAYOUT */
 main{max-width:1200px;margin:0 auto;padding:24px 20px}
 .section-title{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#a0aec0;margin-bottom:12px}
@@ -117,147 +171,200 @@ canvas{width:100%!important}
   <div class="topbar-inner">
     <div class="brand">
       <h1>Forecast Harga Saham Batubara IDX &mdash; Hybrid ARIMA-LSTM</h1>
-      <p>ADRO &bull; PTBA &bull; INDY &bull; ITMG &nbsp;|&nbsp; Evaluasi Empiris One-Step-Ahead (h=1) Bebas Pre-IPO Bias (Revisi SINTA 2 JISI)</p>
+      <p>ADRO &bull; PTBA &bull; INDY &bull; ITMG &nbsp;|&nbsp; Evaluasi Kinerja Model Forecasting Saham (One-Step-Ahead, h=1)</p>
     </div>
-    <div class="badges">
-      <span class="badge badge-blue">Evaluasi: One-Step-Ahead (h=1)</span>
-      <span class="badge badge-green">Test Set: 476 Hari Bursa (2023–2024)</span>
-      <span class="badge badge-amber" id="badge-proyeksi">Proyeksi 2045: Diarsipkan</span>
+    <div class="nav-tabs" id="nav-tabs-container">
+      <button class="nav-tab active" id="tab-btn-evaluasi" onclick="switchMainTab('evaluasi', this)">
+        <span class="tab-badge-num">1</span> Evaluasi Model (One-Step-Ahead, h=1)
+      </button>
+      <button class="nav-tab" id="tab-btn-testset" onclick="switchMainTab('testset', this)">
+        <span class="tab-badge-num">2</span> Test Set 2023&ndash;2024 (476 Hari Bursa)
+      </button>
+      <button class="nav-tab" id="tab-btn-simulasi" onclick="switchMainTab('simulasi', this)">
+        <span class="tab-badge-num">3</span> Simulasi Eksploratif 2025&ndash;2045
+      </button>
       <span id="gen-time"></span>
     </div>
   </div>
 </div>
 
 <main>
-  <!-- TABS -->
+  <!-- TABS SAHAM (GLOBAL TICKER PICKER) -->
   <div class="section-title">Pilih Saham</div>
   <div class="tabs" id="tabs"></div>
 
-  <!-- ACCURACY CARDS -->
-  <div class="section-title">Akurasi Model Hybrid ARIMA-LSTM (Evaluasi Test Set Out-of-Sample)</div>
-  <div class="acc-row" id="acc-row"></div>
+  <!-- TAB PANE 1: EVALUASI MODEL (ONE-STEP-AHEAD, h=1) -->
+  <div class="tab-pane" id="pane-evaluasi">
+    <div class="section-title">Akurasi Model Hybrid ARIMA-LSTM (Evaluasi Test Set Out-of-Sample)</div>
+    <div class="acc-row" id="acc-row"></div>
 
-  <!-- COMPARISON TABLE CARD -->
-  <div class="card" style="padding:18px 22px">
-    <div class="card-header" style="margin-bottom:10px">
-      <div>
-        <div class="card-title" id="cmp-table-title">Perbandingan Evaluasi 4 Model &mdash; Test Set 2023&ndash;2024 (N=476 Hari)</div>
-        <div class="card-sub">Hasil pengujian empiris tanpa data pre-IPO dan bebas look-ahead bias</div>
-      </div>
-    </div>
-    <div class="tbl-wrap" style="max-height:220px">
-      <table>
-        <thead>
-          <tr>
-            <th>Model</th>
-            <th>MAE (IDR)</th>
-            <th>RMSE (IDR)</th>
-            <th>MAPE (%)</th>
-            <th>R&sup2;</th>
-            <th>MASE</th>
-            <th>RMSSE</th>
-            <th>Directional Acc (DA %)</th>
-          </tr>
-        </thead>
-        <tbody id="tbl-models-body"></tbody>
-      </table>
-    </div>
-    <div class="alert-box">
-      <strong>Catatan Evaluasi Ilmiah:</strong> Pada data harian one-step-ahead (<em>h = 1</em>), <em>Na&iuml;ve Random Walk</em> menghasilkan MAPE terendah (1,31%&ndash;1,92%), konsisten dengan teori pasar efisien (EMH). Model <strong>Hybrid ARIMA-LSTM</strong> dan Standalone ARIMA secara konsisten menghasilkan <strong>Directional Accuracy (arah tren) tertinggi</strong> (45,3%&ndash;47,0% vs 41,3%&ndash;44,6%), menunjukkan keunggulan ekonometrika dalam mendeteksi arah pergerakan harga.
-    </div>
-  </div>
-
-  <!-- TRAIN TEST CHART -->
-  <div class="card">
-    <div class="card-header">
-      <div>
-        <div class="card-title" id="ct1">Harga Penutupan Harian &mdash; Train / Test (Aktual vs Prediksi Hybrid)</div>
-        <div class="card-sub">Garis vertikal memisahkan data latih bebas pre-IPO dan data uji out-of-sample</div>
-      </div>
-      <div>
-        <div class="legend" id="leg-main"></div>
-        <div class="split-info" style="margin-top:8px">
-          <div class="split-box" style="border-color:#2b6cb0;background:#ebf8ff"></div><span id="txt-train-split">Data Train (&le; 2022)</span>
-          <div class="split-box" style="border-color:#38a169;background:#f0fff4"></div><span>Aktual Test (2023-2024)</span>
-          <div class="split-box" style="border-color:#dd6b20;background:#fffaf0"></div><span>Prediksi Hybrid (h=1)</span>
-        </div>
-      </div>
-    </div>
-    <canvas id="chart-tt" height="85"></canvas>
-  </div>
-
-  <!-- TWO TABLES: TRAIN & TEST -->
-  <div class="grid2">
-    <div class="card" style="margin-bottom:0">
-      <div class="card-title" style="margin-bottom:14px" id="lbl-tbl-train">Tabel Data Train (Harga Penutupan Harian)</div>
-      <div class="tbl-wrap">
-        <table>
-          <thead><tr><th>Tanggal</th><th>Harga Saham (Close)</th><th>Fitur</th></tr></thead>
-          <tbody id="tbl-train-body"></tbody>
-        </table>
-      </div>
-    </div>
-    <div class="card" style="margin-bottom:0">
-      <div class="card-title" style="margin-bottom:14px" id="lbl-tbl-test">Tabel Data Test (476 Hari Bursa 2023&ndash;2024)</div>
-      <div class="tbl-wrap">
-        <table>
-          <thead><tr><th>Tanggal</th><th>Aktual</th><th>Prediksi Hybrid</th><th>Selisih (IDR)</th><th>Error (%)</th></tr></thead>
-          <tbody id="tbl-test-body"></tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
-  <!-- GRID BAWAH: TEST SET MULTI-MODEL COMPARISON & EXPANDING WINDOW -->
-  <div class="grid2" style="margin-top:18px">
-    <div class="card" style="margin-bottom:0">
-      <div class="card-header" style="margin-bottom:8px">
+    <!-- COMPARISON TABLE CARD -->
+    <div class="card" style="padding:18px 22px">
+      <div class="card-header" style="margin-bottom:10px">
         <div>
-          <div class="card-title">Perbandingan Model pada Test Set (2023&ndash;2024)</div>
-          <div class="card-sub">Pilih model untuk ditinjau bersama harga aktual</div>
-        </div>
-        <div class="rbg" id="model-toggles">
-          <button class="rb act" onclick="toggleDataset('Hybrid',this)">Hybrid</button>
-          <button class="rb act" onclick="toggleDataset('ARIMA',this)">ARIMA</button>
-          <button class="rb act" onclick="toggleDataset('NRW',this)">NRW</button>
-          <button class="rb" onclick="toggleDataset('LSTM',this)">LSTM</button>
+          <div class="card-title" id="cmp-table-title">Perbandingan Evaluasi 4 Model &mdash; Test Set 2023&ndash;2024 (N=476 Hari)</div>
+          <div class="card-sub">Hasil pengujian empiris tanpa data pre-IPO dan bebas look-ahead bias</div>
         </div>
       </div>
-      <canvas id="chart-cmp-tt" height="140"></canvas>
+      <div class="tbl-wrap" style="max-height:220px">
+        <table>
+          <thead>
+            <tr>
+              <th>Model</th>
+              <th>MAE (IDR)</th>
+              <th>RMSE (IDR)</th>
+              <th>MAPE (%)</th>
+              <th>R&sup2;</th>
+              <th>MASE</th>
+              <th>RMSSE</th>
+              <th>Directional Acc (DA %)</th>
+            </tr>
+          </thead>
+          <tbody id="tbl-models-body"></tbody>
+        </table>
+      </div>
+      <div class="alert-box">
+        <strong>Catatan Evaluasi Ilmiah:</strong> Pada data harian one-step-ahead (<em>h = 1</em>), <em>Na&iuml;ve Random Walk</em> menghasilkan MAPE terendah (1,31%&ndash;1,92%), konsisten dengan teori pasar efisien (EMH). Model <strong>Hybrid ARIMA-LSTM</strong> dan Standalone ARIMA secara konsisten menghasilkan <strong>Directional Accuracy (arah tren) tertinggi</strong> (45,3%&ndash;47,0% vs 41,3%&ndash;44,6%), menunjukkan keunggulan ekonometrika dalam mendeteksi arah pergerakan harga.
+      </div>
     </div>
-    <div class="card" style="margin-bottom:0">
-      <div class="card-header" style="margin-bottom:8px">
+
+    <!-- TRAIN TEST CHART -->
+    <div class="card">
+      <div class="card-header">
         <div>
-          <div class="card-title">Expanding-Window Cross-Validation (3 Folds)</div>
-          <div class="card-sub">Stabilitas MAPE rata-rata antar rezim krisis & komoditas (2020, 2021, 2022)</div>
+          <div class="card-title" id="ct1">Harga Penutupan Harian &mdash; Train / Test (Aktual vs Prediksi Hybrid)</div>
+          <div class="card-sub">Garis vertikal memisahkan data latih bebas pre-IPO dan data uji out-of-sample</div>
+        </div>
+        <div>
+          <div class="legend" id="leg-main"></div>
+          <div class="split-info" style="margin-top:8px">
+            <div class="split-box" style="border-color:#2b6cb0;background:#ebf8ff"></div><span id="txt-train-split">Data Train (&le; 2022)</span>
+            <div class="split-box" style="border-color:#38a169;background:#f0fff4"></div><span>Aktual Test (2023-2024)</span>
+            <div class="split-box" style="border-color:#dd6b20;background:#fffaf0"></div><span>Prediksi Hybrid (h=1)</span>
+          </div>
         </div>
       </div>
-      <canvas id="chart-ew" height="140"></canvas>
+      <canvas id="chart-tt" height="85"></canvas>
+    </div>
+
+    <!-- GRID BAWAH: TEST SET MULTI-MODEL COMPARISON & EXPANDING WINDOW -->
+    <div class="grid2" style="margin-top:18px">
+      <div class="card" style="margin-bottom:0">
+        <div class="card-header" style="margin-bottom:8px">
+          <div>
+            <div class="card-title">Perbandingan Model pada Test Set (2023&ndash;2024)</div>
+            <div class="card-sub">Pilih model untuk ditinjau bersama harga aktual</div>
+          </div>
+          <div class="rbg" id="model-toggles">
+            <button class="rb act" onclick="toggleDataset('Hybrid',this)">Hybrid</button>
+            <button class="rb act" onclick="toggleDataset('ARIMA',this)">ARIMA</button>
+            <button class="rb act" onclick="toggleDataset('NRW',this)">NRW</button>
+            <button class="rb" onclick="toggleDataset('LSTM',this)">LSTM</button>
+          </div>
+        </div>
+        <canvas id="chart-cmp-tt" height="140"></canvas>
+      </div>
+      <div class="card" style="margin-bottom:0">
+        <div class="card-header" style="margin-bottom:8px">
+          <div>
+            <div class="card-title">Expanding-Window Cross-Validation (3 Folds)</div>
+            <div class="card-sub">Stabilitas MAPE rata-rata antar rezim krisis & komoditas (2020, 2021, 2022)</div>
+          </div>
+        </div>
+        <canvas id="chart-ew" height="140"></canvas>
+      </div>
     </div>
   </div>
 
-  <!-- PROYEKSI 2025-2045 ARSIP CARD -->
-  <div class="card" style="margin-top:18px">
-    <div class="card-header" style="margin-bottom:10px">
-      <div>
-        <div class="card-title">Status Proyeksi Jangka Panjang 2025&ndash;2045 &mdash; Diarsipkan Sesuai Review JISI</div>
-        <div class="card-sub">Catatan penelaah sejawat (peer-reviewer) terkait validitas proyeksi 20 tahun univariat</div>
+  <!-- TAB PANE 2: TEST SET 2023-2024 (476 HARI BURSA) -->
+  <div class="tab-pane" id="pane-testset" style="display:none">
+    <div class="section-title">Dataset Pengujian &bull; Test Set Out-of-Sample (476 Hari Bursa)</div>
+    
+    <div class="card" style="padding:18px 22px;margin-bottom:18px">
+      <div class="card-header" style="margin-bottom:12px">
+        <div>
+          <div class="card-title">Informasi Dataset & Protokol Pengujian 2023&ndash;2024</div>
+          <div class="card-sub">Rincian data empiris transaksi harian bebas pre-IPO tanpa look-ahead bias</div>
+        </div>
       </div>
-      <div>
-        <button class="rb" id="btn-toggle-archive" onclick="toggleArchiveSection()">Lihat Arsip Simulasi Proyeksi</button>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:14px">
+        <div style="background:#f7fafc;border:1px solid #e2e8f0;border-radius:8px;padding:12px 14px">
+          <div style="font-size:.7rem;font-weight:600;color:#718096;text-transform:uppercase">Periode Test Set</div>
+          <div style="font-size:1.15rem;font-weight:700;color:#2d3748;margin-top:4px">2023 &ndash; 2024</div>
+          <div style="font-size:.72rem;color:#a0aec0;margin-top:2px">476 Hari Transaksi Bursa</div>
+        </div>
+        <div style="background:#f7fafc;border:1px solid #e2e8f0;border-radius:8px;padding:12px 14px">
+          <div style="font-size:.7rem;font-weight:600;color:#718096;text-transform:uppercase">Protokol Evaluasi</div>
+          <div style="font-size:1.15rem;font-weight:700;color:#2b6cb0;margin-top:4px">Rolling Forecast</div>
+          <div style="font-size:.72rem;color:#a0aec0;margin-top:2px">One-Step-Ahead (h = 1)</div>
+        </div>
+        <div style="background:#f7fafc;border:1px solid #e2e8f0;border-radius:8px;padding:12px 14px">
+          <div style="font-size:.7rem;font-weight:600;color:#718096;text-transform:uppercase">Penyaringan Pre-IPO</div>
+          <div style="font-size:1.15rem;font-weight:700;color:#38a169;margin-top:4px">Bebas Data Datar</div>
+          <div style="font-size:.72rem;color:#a0aec0;margin-top:2px">Hanya data riil pasca-IPO</div>
+        </div>
       </div>
-    </div>
-    <div class="alert-box amber" style="margin-top:0">
-      <strong>Keterangan Penonaktifan:</strong> Berdasarkan catatan reviewer <em>Journal of Information Systems and Informatics</em> (SINTA 2), proyeksi univariat 20 tahun (2025&ndash;2045) memiliki tingkat ketidakpastian struktural yang tinggi dan belum tervalidasi oleh faktor fundamental makroekonomi. Oleh karena itu, kurva proyeksi 2045 <strong>dinonaktifkan sementara dari visualisasi utama</strong>. Seluruh data simulasi lama tetap tersimpan secara aman dalam arsip <code>data_saham.json</code> untuk keperluan reproduksibilitas ilmiah.
+      <div class="alert-box" style="margin-top:0">
+        <strong>Keterangan Pengujian:</strong> Seluruh observasi pada tabel di bawah ini merupakan data aktual harian penutupan pasar saham batubara di Bursa Efek Indonesia (BEI) selama periode 2023&ndash;2024 (476 hari bursa), dibandingkan langsung dengan hasil estimasi model <em>Hybrid ARIMA-LSTM</em> satu langkah ke depan (<em>h = 1</em>).
+      </div>
     </div>
 
-    <div id="archive-section" style="display:none;margin-top:16px">
-      <div class="card-title" style="font-size:.85rem;margin-bottom:10px">Tabel Arsip Simulasi Proyeksi Tahunan (2025&ndash;2045) &mdash; Nilai Desember (Unvalidated Archive)</div>
-      <div class="tbl-wrap">
-        <table>
-          <thead><tr><th>Tahun</th><th>ADRO (IDR)</th><th>PTBA (IDR)</th><th>INDY (IDR)</th><th>ITMG (IDR)</th></tr></thead>
-          <tbody id="tbl-body"></tbody>
-        </table>
+    <!-- TWO TABLES: TRAIN & TEST -->
+    <div class="grid2">
+      <div class="card" style="margin-bottom:0">
+        <div class="card-title" style="margin-bottom:14px" id="lbl-tbl-train">Tabel Data Train (Harga Penutupan Harian)</div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Tanggal</th><th>Harga Saham (Close)</th><th>Fitur</th></tr></thead>
+            <tbody id="tbl-train-body"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="card" style="margin-bottom:0">
+        <div class="card-title" style="margin-bottom:14px" id="lbl-tbl-test">Tabel Data Test (476 Hari Bursa 2023&ndash;2024)</div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Tanggal</th><th>Aktual</th><th>Prediksi Hybrid</th><th>Selisih (IDR)</th><th>Error (%)</th></tr></thead>
+            <tbody id="tbl-test-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB PANE 3: SIMULASI EKSPLORATIF 2025-2045 -->
+  <div class="tab-pane" id="pane-simulasi" style="display:none">
+    <div class="section-title" style="color:#6b46c1">Simulasi Eksploratif Harga Saham Batubara &bull; 2025&ndash;2045</div>
+
+    <div class="card" style="margin-top:0">
+      <div class="card-header" style="margin-bottom:12px">
+        <div>
+          <div class="card-title" id="ct-sim">Simulasi Eksploratif Harga Saham (2025&ndash;2045)</div>
+          <div class="card-sub">Simulasi eksploratif berdasarkan data historis; belum divalidasi untuk prediksi jangka panjang dan bukan rekomendasi investasi.</div>
+        </div>
+        <div>
+          <div class="rbg" id="fc-range-buttons">
+            <button class="rb" onclick="setFcRange(5,this)">5 Tahun</button>
+            <button class="rb" onclick="setFcRange(10,this)">10 Tahun</button>
+            <button class="rb act" onclick="setFcRange(0,this)">Semua (s.d. 2045)</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="alert-box amber" style="margin-top:0;margin-bottom:18px">
+        <strong>Keterangan Simulasi:</strong> Simulasi eksploratif berdasarkan data historis; belum divalidasi untuk prediksi jangka panjang dan bukan rekomendasi investasi. Hasil simulasi ini dihasilkan dari pola harga historis menggunakan model penelitian sebelumnya.
+      </div>
+
+      <canvas id="chart-fc" height="85"></canvas>
+
+      <div style="margin-top:22px">
+        <div class="card-title" style="font-size:.85rem;margin-bottom:10px">Tabel Simulasi Proyeksi Tahunan (2025&ndash;2045) &mdash; Nilai Desember</div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Tahun</th><th>ADRO (IDR)</th><th>PTBA (IDR)</th><th>INDY (IDR)</th><th>ITMG (IDR)</th></tr></thead>
+            <tbody id="tbl-body"></tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>
@@ -267,7 +374,7 @@ canvas{width:100%!important}
   Sumber Data: Bursa Efek Indonesia / Yahoo Finance (Data Harian Bebas Pre-IPO) &nbsp;|&nbsp; Model: Hybrid ARIMA-LSTM &bull; Standalone ARIMA &bull; Na&iuml;ve Random Walk &bull; Standalone LSTM<br/>
   Protokol: One-Step-Ahead Rolling Forecast (h=1) &nbsp;|&nbsp; Periode Historis: 2004&ndash;2024 &nbsp;|&nbsp; Penelitian FMIPA &mdash; Dayinta Agustina Zanuel<br/>
   <span style="font-size:.7rem;color:#a0aec0;display:inline-block;margin-top:6px">
-    <strong>Disclaimer Akademik:</strong> Dashboard ini merupakan media diseminasi visualisasi hasil penelitian ilmiah Hybrid ARIMA-LSTM untuk revisi jurnal SINTA 2, bukan sistem rekomendasi investasi atau saran finansial terlisensi.
+    <strong>Disclaimer Akademik:</strong> Dashboard ini merupakan media diseminasi visualisasi hasil penelitian ilmiah Hybrid ARIMA-LSTM, bukan sistem rekomendasi investasi atau saran finansial terlisensi.
   </span>
 </footer>
 
@@ -279,7 +386,7 @@ const CMAP = {
   ITMG:{h:'#702459',test:'#38a169',pred:'#dd6b20',arima:'#702459',nrw:'#718096',lstm:'#e53e3e'},
 };
 
-let DATA=null,cur='ADRO',ttChart=null,cmpChart=null,ewChart=null;
+let DATA=null,cur='ADRO',ttChart=null,cmpChart=null,ewChart=null,fcChart=null;
 let activeModels = { Hybrid: true, ARIMA: true, NRW: true, LSTM: false };
 
 const ts = s => new Date(s + 'T12:00:00').getTime();
@@ -318,6 +425,34 @@ fetch('data_saham.json')
     document.querySelector('.spin').style.display='none';
   });
 
+let currentNavTab = 'evaluasi';
+
+function switchMainTab(tabId, btn){
+  currentNavTab = tabId;
+  document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  else document.getElementById('tab-btn-' + tabId)?.classList.add('active');
+
+  // Hide all tab panes
+  document.querySelectorAll('.tab-pane').forEach(p => p.style.display = 'none');
+  
+  // Show target tab pane
+  const target = document.getElementById('pane-' + tabId);
+  if(target) target.style.display = 'block';
+
+  // Force chart update and resize to guarantee pristine canvas rendering
+  requestAnimationFrame(() => {
+    if(tabId === 'evaluasi'){
+      if(ttChart) { ttChart.resize(); ttChart.update(); }
+      if(cmpChart) { cmpChart.resize(); cmpChart.update(); }
+      if(ewChart) { ewChart.resize(); ewChart.update(); }
+    } else if(tabId === 'simulasi'){
+      if(fcChart) { fcChart.resize(); fcChart.update(); }
+      else { buildFcChart(cur); }
+    }
+  });
+}
+
 function init(){
   document.getElementById('loading').style.display='none';
   if(DATA.meta?.generated_at){
@@ -325,9 +460,10 @@ function init(){
     document.getElementById('gen-time').textContent='Data Bersih: '+d.toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'});
   }
   buildTabs();
-  buildArchiveTable();
   buildEWChart();
+  buildSimulationTable();
   switchTicker('ADRO');
+  switchMainTab('evaluasi', document.getElementById('tab-btn-evaluasi'));
 }
 
 function buildTabs(){
@@ -352,10 +488,23 @@ function switchTicker(t){
   buildTTChart(t);
   buildCmpChart(t);
   buildTrainTestTables(t);
+  buildFcChart(t);
   document.getElementById('ct1').textContent=t+' — Harga Penutupan Harian (Data Train vs Aktual Test vs Prediksi Hybrid)';
   document.getElementById('cmp-table-title').textContent=t+' — Perbandingan Evaluasi 4 Model (Test Set 2023–2024, N=476)';
   document.getElementById('lbl-tbl-train').textContent=`${t} — Tabel Data Train (N=${(DATA.stocks[t].historical||[]).length} Hari Latih)`;
   document.getElementById('lbl-tbl-test').textContent=`${t} — Tabel Data Test (N=${(DATA.stocks[t].test_actual||[]).length} Hari Bursa)`;
+  const simTitle = document.getElementById('ct-sim');
+  if(simTitle) simTitle.textContent = `${t} — Simulasi Eksploratif Harga Saham (2025–2045)`;
+
+  requestAnimationFrame(() => {
+    if(currentNavTab === 'evaluasi'){
+      if(ttChart) { ttChart.resize(); ttChart.update(); }
+      if(cmpChart) { cmpChart.resize(); cmpChart.update(); }
+      if(ewChart) { ewChart.resize(); ewChart.update(); }
+    } else if(currentNavTab === 'simulasi'){
+      if(fcChart) { fcChart.resize(); fcChart.update(); }
+    }
+  });
 }
 
 function buildAccCards(t){
@@ -573,36 +722,103 @@ function buildEWChart(){
   });
 }
 
-// ARCHIVED PROJECTION TABLE
-function buildArchiveTable(){
-  const tb=document.getElementById('tbl-body');
-  const tickers=Object.keys(DATA.stocks);
-  const ymap={};
-  for(let y=2025;y<=2045;y++) ymap[y]={};
-  tickers.forEach(t=>{
-    (DATA.stocks[t].forecast_archive||[]).forEach(p=>{
-      const yr=+p.date.slice(0,4), mo=+p.date.slice(5,7);
-      if(yr>=2025&&yr<=2045&&(!ymap[yr][t]||mo===12)) ymap[yr][t]=p.value;
-    });
-  });
-  for(let y=2025;y<=2045;y++){
-    const tr=document.createElement('tr');
-    tr.innerHTML=`<td><strong>${y}</strong></td>`+tickers.map(t=>`<td>${fmt(ymap[y][t])}</td>`).join('');
-    tb.appendChild(tr);
-  }
+// BAGIAN 2: SIMULASI EKSPLORATIF (2025-2045)
+let curCutYears = 0;
+
+function setFcRange(years, btn){
+  curCutYears = years;
+  document.querySelectorAll('#fc-range-buttons .rb').forEach(b => b.classList.remove('act'));
+  btn.classList.add('act');
+  buildFcChart(cur);
 }
 
-function toggleArchiveSection(){
-  const sec = document.getElementById('archive-section');
-  const btn = document.getElementById('btn-toggle-archive');
-  if(sec.style.display === 'none'){
-    sec.style.display = 'block';
-    btn.textContent = 'Sembunyikan Arsip Simulasi';
-    btn.classList.add('act');
-  } else {
-    sec.style.display = 'none';
-    btn.textContent = 'Lihat Arsip Simulasi Proyeksi';
-    btn.classList.remove('act');
+function buildFcChart(t){
+  const s = DATA.stocks[t]; if(!s) return;
+  const fc = s.forecast_archive || s.forecast || [];
+  if(!fc.length) return;
+
+  const minX = ts('2025-01-01');
+  let maxX = ts('2046-01-01');
+  if(curCutYears === 5) maxX = ts('2030-01-01');
+  else if(curCutYears === 10) maxX = ts('2035-01-01');
+
+  const filtered = fc.filter(p => {
+    const tVal = ts(p.date);
+    return tVal >= minX && tVal <= maxX;
+  });
+
+  const dsMain = {
+    label: `Simulasi Nilai Tengah ${t}`,
+    data: filtered.map(p => ({ x: ts(p.date), y: p.value })),
+    borderColor: '#6b46c1',
+    backgroundColor: 'rgba(107, 70, 193, 0.08)',
+    borderWidth: 2,
+    pointRadius: 0,
+    tension: 0.25,
+    fill: true
+  };
+
+  const dsUpper = {
+    label: 'Batas Atas (Upper 95%)',
+    data: filtered.map(p => ({ x: ts(p.date), y: p.upper })),
+    borderColor: 'rgba(107, 70, 193, 0.4)',
+    borderDash: [4, 4],
+    borderWidth: 1.2,
+    pointRadius: 0,
+    tension: 0.25,
+    fill: false
+  };
+
+  const dsLower = {
+    label: 'Batas Bawah (Lower 95%)',
+    data: filtered.map(p => ({ x: ts(p.date), y: p.lower })),
+    borderColor: 'rgba(107, 70, 193, 0.4)',
+    borderDash: [4, 4],
+    borderWidth: 1.2,
+    pointRadius: 0,
+    tension: 0.25,
+    fill: false
+  };
+
+  if(fcChart) fcChart.destroy();
+  const canvasEl = document.getElementById('chart-fc');
+  if(!canvasEl) return;
+  fcChart = new Chart(canvasEl, {
+    type: 'line',
+    data: { datasets: [dsMain, dsUpper, dsLower] },
+    options: {
+      responsive: true,
+      interaction: { mode: 'x', intersect: false },
+      plugins: {
+        legend: { labels: { color: '#718096', font: { size: 11 }, boxWidth: 16 } },
+        tooltip: { ...TOOLTIP_BASE }
+      },
+      scales: {
+        x: { ...SCALE_X(minX, maxX) },
+        y: { ...SCALE_Y }
+      }
+    }
+  });
+}
+
+function buildSimulationTable(){
+  const tb = document.getElementById('tbl-body');
+  if(!tb) return;
+  tb.innerHTML = '';
+  const tickers = Object.keys(DATA.stocks);
+  const ymap = {};
+  for(let y=2025; y<=2045; y++) ymap[y] = {};
+  tickers.forEach(t => {
+    const list = DATA.stocks[t].forecast_archive || DATA.stocks[t].forecast || [];
+    list.forEach(p => {
+      const yr = +p.date.slice(0, 4), mo = +p.date.slice(5, 7);
+      if(yr >= 2025 && yr <= 2045 && (!ymap[yr][t] || mo === 12)) ymap[yr][t] = p.value;
+    });
+  });
+  for(let y=2025; y<=2045; y++){
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td><strong>${y}</strong></td>` + tickers.map(t => `<td>${fmt(ymap[y][t])}</td>`).join('');
+    tb.appendChild(tr);
   }
 }
 </script>
