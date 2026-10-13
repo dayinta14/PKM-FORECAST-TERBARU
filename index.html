@@ -183,7 +183,7 @@ canvas{width:100%!important}
       <button class="nav-tab" id="tab-btn-simulasi" onclick="switchMainTab('simulasi', this)">
         <span class="tab-badge-num">3</span> Simulasi Eksploratif 2025&ndash;2045
       </button>
-      <span id="gen-time"></span>
+      <span id="gen-time">Dataset Historis: 2004&ndash;2024</span>
     </div>
   </div>
 </div>
@@ -224,7 +224,8 @@ canvas{width:100%!important}
         </table>
       </div>
       <div class="alert-box">
-        <strong>Catatan Evaluasi Ilmiah:</strong> Pada data harian one-step-ahead (<em>h = 1</em>), <em>Na&iuml;ve Random Walk</em> menghasilkan MAPE terendah (1,31%&ndash;1,92%), konsisten dengan teori pasar efisien (EMH). Model <strong>Hybrid ARIMA-LSTM</strong> dan Standalone ARIMA secara konsisten menghasilkan <strong>Directional Accuracy (arah tren) tertinggi</strong> (45,3%&ndash;47,0% vs 41,3%&ndash;44,6%), menunjukkan keunggulan ekonometrika dalam mendeteksi arah pergerakan harga.
+        <strong>Catatan Evaluasi Model:</strong> Na&iuml;ve Random Walk (NRW) menghasilkan MAPE terendah pada keempat saham, menunjukkan bahwa harga perdagangan sebelumnya merupakan benchmark yang kuat untuk prediksi satu hari ke depan. Namun, hasil ini tidak secara langsung membuktikan <em>Efficient Market Hypothesis</em> (EMH).<br style="margin-bottom:6px"/>
+        <strong>Catatan Directional Accuracy:</strong> Directional Accuracy menunjukkan kesesuaian arah perubahan harga aktual dan prediksi berdasarkan definisi evaluasi yang digunakan. Nilai DA hybrid pada keempat saham masih berada di bawah 50%, sehingga tidak dapat disimpulkan adanya keunggulan prediksi arah yang konsisten.
       </div>
     </div>
 
@@ -352,7 +353,7 @@ canvas{width:100%!important}
       </div>
 
       <div class="alert-box amber" style="margin-top:0;margin-bottom:18px">
-        <strong>Keterangan Simulasi:</strong> Simulasi eksploratif berdasarkan data historis; belum divalidasi untuk prediksi jangka panjang dan bukan rekomendasi investasi. Hasil simulasi ini dihasilkan dari pola harga historis menggunakan model penelitian sebelumnya.
+        <strong>Keterangan Simulasi:</strong> Simulasi eksploratif berdasarkan data historis; belum divalidasi untuk prediksi jangka panjang dan bukan rekomendasi investasi. Batas atas dan bawah 95% berasal dari komponen ARIMA dan tidak mencakup ketidakpastian koreksi residual LSTM. Simulasi 2025&ndash;2045 belum divalidasi untuk prediksi jangka panjang.
       </div>
 
       <canvas id="chart-fc" height="85"></canvas>
@@ -455,10 +456,7 @@ function switchMainTab(tabId, btn){
 
 function init(){
   document.getElementById('loading').style.display='none';
-  if(DATA.meta?.generated_at){
-    const d=new Date(DATA.meta.generated_at);
-    document.getElementById('gen-time').textContent='Data Bersih: '+d.toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'});
-  }
+  document.getElementById('gen-time').textContent='Dataset Historis: 2004–2024';
   buildTabs();
   buildEWChart();
   buildSimulationTable();
@@ -511,18 +509,13 @@ function buildAccCards(t){
   const s=DATA.stocks[t];if(!s||s.error)return;
   const m=s.metrics,hist=s.historical||[];
   const last=hist.length?hist[hist.length-1].value:0;
-  
-  // Status label based on MAPE
-  const statusText = m.MAPE < 2 ? 'Sangat Baik (<2%)' : m.MAPE < 5 ? 'Baik (<5%)' : m.MAPE < 10 ? 'Cukup (<10%)' : 'Perlu Evaluasi';
-  const statusClass = m.MAPE < 2 ? 'status-good' : m.MAPE < 5 ? 'status-ok' : m.MAPE < 10 ? 'status-warning' : 'status-bad';
-  const mapeClass = m.MAPE < 2 ? 'acc-good' : m.MAPE < 5 ? 'acc-ok' : 'acc-bad';
 
   document.getElementById('acc-row').innerHTML=`
     <div class="acc-card"><div class="acc-label">MAE (IDR)</div><div class="acc-val">${fmt(m.MAE)}</div><div class="acc-sub">Mean Absolute Error</div></div>
     <div class="acc-card green"><div class="acc-label">RMSE (IDR)</div><div class="acc-val">${fmt(m.RMSE)}</div><div class="acc-sub">Root Mean Sq. Error</div></div>
-    <div class="acc-card orange"><div class="acc-label">MAPE</div><div class="acc-val ${mapeClass}">${m.MAPE.toFixed(2)}%</div><div class="acc-sub status-text ${statusClass}">Status: ${statusText}</div></div>
+    <div class="acc-card orange"><div class="acc-label">MAPE</div><div class="acc-val">${m.MAPE.toFixed(2)}%</div><div class="acc-sub">Mean Absolute % Error</div></div>
     <div class="acc-card purple"><div class="acc-label">Koefisien R&sup2;</div><div class="acc-val">${m.R2.toFixed(4)}</div><div class="acc-sub">Determinasi Out-of-Sample</div></div>
-    <div class="acc-card teal"><div class="acc-label">Directional Acc.</div><div class="acc-val">${m.DA.toFixed(2)}%</div><div class="acc-sub">Arah Tren &bull; MASE: ${m.MASE.toFixed(3)}</div></div>
+    <div class="acc-card teal"><div class="acc-label">Directional Acc.</div><div class="acc-val">${m.DA.toFixed(2)}%</div><div class="acc-sub">Arah Perubahan &bull; MASE: ${m.MASE.toFixed(3)}</div></div>
     <div class="acc-card"><div class="acc-label">Order ARIMA</div><div class="acc-val" style="font-size:1.25rem">(${(s.order||[]).join(', ')})</div><div class="acc-sub">Grid Search AIC (p, d, q)</div></div>
   `;
 }
@@ -759,7 +752,7 @@ function buildFcChart(t){
   };
 
   const dsUpper = {
-    label: 'Batas Atas (Upper 95%)',
+    label: 'Batas Atas ARIMA (95%)',
     data: filtered.map(p => ({ x: ts(p.date), y: p.upper })),
     borderColor: 'rgba(107, 70, 193, 0.4)',
     borderDash: [4, 4],
@@ -770,7 +763,7 @@ function buildFcChart(t){
   };
 
   const dsLower = {
-    label: 'Batas Bawah (Lower 95%)',
+    label: 'Batas Bawah ARIMA (95%)',
     data: filtered.map(p => ({ x: ts(p.date), y: p.lower })),
     borderColor: 'rgba(107, 70, 193, 0.4)',
     borderDash: [4, 4],
